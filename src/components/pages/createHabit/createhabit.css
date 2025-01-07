@@ -1,14 +1,28 @@
-.createHabit {
-  height: calc(100vh - 50px);
+.createHabitOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
+}
+
+.createHabit {
+  position: relative;
+  width: 900px;
+  padding: 3rem;
   background: #fafafa;
+  border: 2px solid #000;
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 #000;
 }
 
 .createHabbitTitle {
-  font-size: 60px;
+  font-size: 45px;
   color: #000;
   font-weight: 800;
   letter-spacing: 2px;
@@ -19,13 +33,13 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  width: 700px;
+  width: 100%;
 }
 
 .createHabitInputGroup {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .createHabitInputGroup label {

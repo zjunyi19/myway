@@ -1,4 +1,4 @@
-.topbar {
+.topBar {
   position: sticky;
   top: 0;
   width: 100%;
@@ -10,7 +10,12 @@
   z-index: 1000;
 }
 
-.header {
+.buttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.headerTitle {
   font-size: 2rem;
   font-weight: 800;
   color: #000;
@@ -19,8 +24,8 @@
   padding: 1.5rem 0;
 }
 
-.add-button {
-  margin: 1.5rem;
+.addButton {
+  margin: 1.5rem 0;
   padding: 0;
   color: #000;
   background: none;
@@ -36,9 +41,32 @@
   transition: all 0.2s ease;
 }
   
-.add-button:hover {
+.addButton:hover {
   background-color: #000;
   color: #fff;
   transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 #ff4b4b;
+}
+
+.loginButton2 {
+  margin: 1.5rem;
+  padding: 0;
+  color: #9c9c9c;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  line-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.loginButton2:hover {
+  color: #000000;
+  transform: translate(-2px, -2px);
 }

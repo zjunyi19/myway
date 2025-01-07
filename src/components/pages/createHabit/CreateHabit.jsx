@@ -1,12 +1,19 @@
 import "./createhabit.css"
 
-export default function CreateHabit() {
+export default function CreateHabit({ onClose }) {
+  const handleOverlayClick = (e) => {
+    if (e.target.className === 'createHabitOverlay') {
+      onClose();
+    }
+  };
+
   return (
-    <div className="createHabit">
+    <div className="createHabitOverlay" onClick={handleOverlayClick}>
+      <div className="createHabit">
         <div className="createHabbitTitle">Add a Habit</div>
-        <button className="createHabitButton"> Back </button>
-        <button className="createHabitButton"> Submit </button>
-        <form action="" className="createHabitForm">
+        <button className="createHabitButton" onClick={onClose}>Back</button>
+        <button className="createHabitButton">Submit</button>
+        <form className="createHabitForm">
             <div className="createHabitInputGroup">
                 <label>I want to</label>
                 <input 
@@ -39,6 +46,7 @@ export default function CreateHabit() {
                 </select>
             </div>
         </form>
+      </div>
     </div>
   )
 }

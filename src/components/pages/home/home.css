@@ -7,7 +7,7 @@
   position: sticky;
   top: 80px;
   display: grid;
-  grid-template-columns: 200px repeat(7, 1fr);
+  grid-template-columns: 200px repeat(8, 1fr);
   gap: 2rem;
   margin-bottom: 0.5rem;
   padding: 0 1rem;
@@ -32,7 +32,7 @@
   position: sticky;
   top: 140px;
   display: grid;
-  grid-template-columns: 200px repeat(7, 1fr);
+  grid-template-columns: 200px repeat(8, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
   padding: 0 1rem;
@@ -67,7 +67,7 @@
 
 .habitRow {
   display: grid;
-  grid-template-columns: 200px repeat(7, 1fr);
+  grid-template-columns: 200px repeat(8, 1fr);
   gap: 2rem;
   align-items: center;
   padding: 1rem;
@@ -91,22 +91,36 @@
 .checkboxCell {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
+  height: 100%;
 }
 
 .checkbox {
   width: 24px;
   height: 24px;
   border: 2px solid #000;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: white;
 }
 
 .checkbox:hover {
   border-color: #ff4b4b;
-  background: rgba(255, 75, 75, 0.1);
   transform: translate(-1px, -1px);
   box-shadow: 2px 2px 0 #000;
+}
+
+.thisWeek {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.thisWeekName {
+  font-weight: 600;
+  color: #000;
 }
   
