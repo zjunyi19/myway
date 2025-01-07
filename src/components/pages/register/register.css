@@ -83,3 +83,29 @@
     transform: translate(-2px, -2px);
     box-shadow: 5px 5px 0 #000;
 }
+
+.registerError {
+    color: #ff4b4b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.registerButton[type="submit"] {
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: #000;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.registerButton[type="submit"]:hover {
+    background-color: #ff4b4b;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}

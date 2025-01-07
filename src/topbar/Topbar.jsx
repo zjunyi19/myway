@@ -11,7 +11,7 @@ export default function Topbar({ onAddClick }) {
         <button className="addButton" onClick={onAddClick}>
           <i className="bi bi-plus-lg"></i>
         </button>
-        <button className="loginButton2" onClick={() => navigate('/login')}>
+        <button className="loginButton2" onClick={() => navigate('/register')}>
           <i className="fa-solid fa-circle-user"></i>
         </button>
       </div>
