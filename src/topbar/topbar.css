@@ -1,0 +1,44 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: #fafafa;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #000;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 2px;
+  padding: 1.5rem 0;
+}
+
+.add-button {
+  margin: 1.5rem;
+  padding: 0;
+  color: #000;
+  background: none;
+  border: 2px solid #000;
+  font-size: 2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+  
+.add-button:hover {
+  background-color: #000;
+  color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #ff4b4b;
+}
