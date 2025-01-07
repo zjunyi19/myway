@@ -125,7 +125,7 @@ input[type="number"] {
 
 .createHabitButton:nth-of-type(2):hover {
   background-color: #ff4b4b;
-  color: #000;
+  color: white;
   transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 #000;
 }
