@@ -1,9 +1,9 @@
 import "./createhabit.css"
 
-export default function CreateHabit({ onClose }) {
+export default function CreateHabit({ onCreateHabitClose }) {
   const handleOverlayClick = (e) => {
     if (e.target.className === 'createHabitOverlay') {
-      onClose();
+      onCreateHabitClose();
     }
   };
 
@@ -11,7 +11,7 @@ export default function CreateHabit({ onClose }) {
     <div className="createHabitOverlay" onClick={handleOverlayClick}>
       <div className="createHabit">
         <div className="createHabbitTitle">Add a Habit</div>
-        <button className="createHabitButton" onClick={onClose}>Back</button>
+        <button className="createHabitButton" onClick={onCreateHabitClose}>Back</button>
         <button className="createHabitButton">Submit</button>
         <form className="createHabitForm">
             <div className="createHabitInputGroup">

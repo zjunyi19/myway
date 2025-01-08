@@ -1,41 +1,42 @@
 import "./register.css"
-import { useNavigate } from "react-router-dom";
-import { auth } from "../../../firebase";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/authContext/AuthProvider";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { auth } from "../../../firebase";
+import { validatePassword } from "../../../utils/passwordHelpers";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const {userLoggedIn} = useAuth();
 
-  const validatePassword = (password) => {
-    if (password.length < 6) {
-      return "Password must be at least 6 characters";
-    }
-    if (!/\d/.test(password)) {
-      return "Password must contain at least one number";
-    }
-    if (!/[A-Z]/.test(password)) {
-      return "Password must contain at least one uppercase letter";
-    }
-    if (!/[a-z]/.test(password)) {
-      return "Password must contain at least one lowercase letter";
-    }
-    return "";
-  };
+  const [email, setEmail] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Test if email and password are filled
-    if (!email || !password) {
+    if(isRegistering) {
+      return;
+    }
+
+    // 检查所有字段是否填写
+    if (!email || !password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
-    // Test if password is complex enough
+
+    // 检查两次密码是否匹配
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // 检查密码复杂度
     const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
@@ -43,9 +44,11 @@ export default function Register() {
     }
 
     try {
+      setIsRegistering(true);
       await createUserWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (error) {
+      setIsRegistering(false);
       switch (error.code) {
         case 'auth/email-already-in-use':
           setError("Email already exists");
@@ -61,9 +64,9 @@ export default function Register() {
 
   return (
     <div className="register">
+      {userLoggedIn && <Navigate to="/" />}
       <span className="registerTitle">Register</span>
       <form className="registerForm" onSubmit={handleSubmit}>
-
         <label>Email</label>
         <input 
           className="registerInput" 
@@ -82,8 +85,17 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <label>Confirm Password</label>
+        <input 
+          className="registerInput" 
+          type="password" 
+          placeholder="Confirm your password..."
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+
         {error && <span className="registerError">{error}</span>}
-        
         <button className="registerButton" type="submit">Register</button>
       </form>
 
