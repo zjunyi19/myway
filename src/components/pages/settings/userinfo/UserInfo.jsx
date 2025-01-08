@@ -7,6 +7,8 @@ import { validatePassword } from "../../../../utils/passwordHelpers";
 export default function UserInfo({ onSettingsClose }) {
   const { user } = useAuth();
   const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -18,11 +20,18 @@ export default function UserInfo({ onSettingsClose }) {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
+    if (isUpdatingPassword) return;
+    
     setError("");
     setMessage("");
 
-    if (!newPassword) {
-      setError("Please enter a new password");
+    if (!newPassword || !confirmNewPassword) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError("Passwords do not match");
       return;
     }
 
@@ -33,10 +42,13 @@ export default function UserInfo({ onSettingsClose }) {
     }
 
     try {
+      setIsUpdatingPassword(true);
       await doPasswordChange(newPassword);
       setMessage("Password updated successfully!");
       setNewPassword("");
+      setConfirmNewPassword("");
     } catch (error) {
+      setIsUpdatingPassword(false);
       setError("Failed to update password");
     }
   };
@@ -54,7 +66,7 @@ export default function UserInfo({ onSettingsClose }) {
 
         <form className="passwordChangeForm" onSubmit={handlePasswordChange}>
           <h2>Change Password</h2>
-          <div className="passwordInputGroup">
+          <div className="passwordInputContainer">
             <input
               type="password"
               placeholder="New password"
@@ -62,11 +74,19 @@ export default function UserInfo({ onSettingsClose }) {
               onChange={(e) => setNewPassword(e.target.value)}
               className="passwordInput"
             />
-            <button type="submit" className="passwordChangeButton">Update</button>
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              className="passwordInput"
+            />
           </div>
+          <button type="submit" className="passwordChangeButton">Update Password</button>
           {error && <span className="error">{error}</span>}
           {message && <span className="success">{message}</span>}
         </form>
+
         <button 
           className="userLogoutButton" 
           onClick={() => {

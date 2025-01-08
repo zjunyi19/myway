@@ -1,6 +1,5 @@
 import "./register.css"
-import { useNavigate, Navigate } from "react-router-dom";
-import { useAuth } from "../../../contexts/authContext/AuthProvider";
+import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "../../../firebase";
@@ -8,7 +7,6 @@ import { validatePassword } from "../../../utils/passwordHelpers";
 
 export default function Register() {
   const navigate = useNavigate();
-  const {userLoggedIn} = useAuth();
 
   const [email, setEmail] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
@@ -64,7 +62,6 @@ export default function Register() {
 
   return (
     <div className="register">
-      {userLoggedIn && <Navigate to="/" />}
       <span className="registerTitle">Register</span>
       <form className="registerForm" onSubmit={handleSubmit}>
         <label>Email</label>
