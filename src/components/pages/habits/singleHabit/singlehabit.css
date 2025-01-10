@@ -1,0 +1,223 @@
+.singleHabitOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.singleHabit {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 6px 6px 0 #000;
+}
+
+.singleHabit h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #ff4b4b;
+  color: white;
+}
+
+.habitField {
+  margin-bottom: 20px;
+}
+
+.habitField label {
+  display: block;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.habitField input[type="text"],
+.habitField input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.habitField input,
+.habitField select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.habitField input:focus,
+.habitField select:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 #000;
+  transform: translate(-2px, -2px);
+}
+
+.targetInputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.targetInputs input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.targetInputs select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.targetInputs .separator {
+  margin: 0 5px;
+  color: #666;
+}
+
+.timeInputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.habitButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.habitButtons button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.habitButtons button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #000;
+}
+
+.habitButtons button[type="submit"],
+.habitButtons button.primary {
+  background: #000;
+  color: white;
+}
+
+.habitButtons button[type="submit"]:hover,
+.habitButtons button.primary:hover {
+  background: #ff4b4b;
+}
+
+.deleteButton {
+  background: white !important;
+  color: #ff4b4b !important;
+  border-color: #ff4b4b !important;
+}
+
+.deleteButton:hover {
+  background: #ff4b4b !important;
+  color: white !important;
+}
+
+.habitDetails {
+  padding: 1rem;
+}
+
+.habitDetails .habitField span {
+  display: block;
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.loadingMessage,
+.errorMessage {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+
+.errorMessage {
+  color: #ff4b4b;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .singleHabit {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .targetInputs,
+  .timeInputs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .targetInputs input,
+  .timeInputs input {
+    width: 100%;
+  }
+
+  .habitButtons {
+    flex-direction: column;
+  }
+
+  .habitButtons button {
+    width: 100%;
+  }
+}
+
+/* 禁用状态的样式 */
+.habitField input:disabled,
+.habitField select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

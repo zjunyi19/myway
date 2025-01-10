@@ -1,33 +1,124 @@
 const express = require('express');
 const router = express.Router();
-const Habit = require('../models/HabitModel');
+const Habits = require('../models/HabitModel');
 
 router.post('/createHabit', async (req, res) => {
   try {
-    console.log('Received habit submission request:', req.body);
-    
-    const { _id, userId, habitName, frequency, target, dates } = req.body;
+    const { firebaseUid, habitName, frequency, target, dates } = req.body;
 
-    // Create new user and save to database
-    const habit = new Habit({
-        _id,
-        userId,
-        habitName,
-        frequency,
-        target,
-        dates,
+    // 创建新的习惯文档
+    const habit = new Habits({
+      firebaseUid,
+      habitName,
+      frequency,
+      target: {
+        amount: target.amount,
+        unit: target.unit,
+        timeIfUnitIsTime: target.unit === "times" ? {
+          timeAmount: target.timeIfUnitIsTime?.timeAmount || null,
+          timeUnit: target.timeIfUnitIsTime?.timeUnit || null,
+          timeType: target.timeIfUnitIsTime?.timeType || null
+        } : null
+      },
+      dates
     });
-    
+
     await habit.save();
-    console.log('Habit saved successfully:', habit);
     
-    res.status(201).json({ message: 'Habit submitted successfully' });
+    res.status(201).json({ 
+      message: 'Habit created successfully',
+      habit 
+    });
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(500).json({ 
-      message: 'Error submitting habit', 
+      message: 'Error creating habit', 
+      error: error.message 
+    });
+  }
+});
+
+// 获取用户的习惯
+router.get('/byuser/:firebaseUid', async (req, res) => {
+  try {
+    const habits = await Habits.find({ firebaseUid: req.params.firebaseUid });
+    
+    if (!habits) {
+      return res.status(404).json({ 
+        message: 'Habits not found',
+        requestedId: req.params.firebaseUid 
+      });
+    }
+    res.json(habits);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error fetching habits',
+      error: error.message
+    });
+  }
+});
+
+router.get('/byid/:habitId', async (req, res) => {
+  try {
+
+    const habit = await Habits.findOne({ _id: req.params.habitId });
+    
+    if (!habit) {
+      return res.status(404).json({ 
+        message: 'Habit not found',
+        requestedId: req.params.habitId 
+      });
+    }
+    res.json(habit);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error fetching habit data',
+      error: error.message
+    });
+  }
+});
+
+// DELETE endpoint
+router.delete('/delete/:habitId', async (req, res) => {
+  const { habitId } = req.params;
+
+  try {
+    const result = await Habits.findByIdAndDelete(habitId);
+    if (!result) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+    res.status(200).json({ message: 'Habit deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting habit', error });
+  }
+});
+
+// PUT endpoint
+router.put('/update/:habitId', async (req, res) => {
+  const { habitId } = req.params;
+
+  try {
+    const result = await Habits.findByIdAndUpdate(
+      habitId,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ 
+        message: 'Habit not found',
+        habitId: habitId
+      });
+    }
+
+    res.status(200).json({ 
+      message: 'Habit updated successfully', 
+      habit: result 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error updating habit', 
       error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      habitId: habitId
     });
   }
 });

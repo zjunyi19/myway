@@ -1,0 +1,82 @@
+.emptyUserContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.emptyUserBox {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  max-width: 500px;
+  margin-top: 15vh;
+  box-shadow: 6px 6px 0 #000;
+  transition: all 0.2s ease;
+}
+
+.emptyUserBox:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 #000;
+}
+
+.emptyUserBox h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.emptyUserBox p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.emptyUserButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.emptyUserButton {
+  padding: 0.75rem 2rem;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 3rem;
+}
+
+.emptyUserButton.login {
+  background: white;
+  color: #000;
+}
+
+.emptyUserButton.register {
+  background: #000;
+  color: white;
+}
+
+.emptyUserButton:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #000;
+}
+
+.emptyUserButton.login:hover {
+  background: #ff4b4b;
+  color: white;
+}
+
+.emptyUserButton.register:hover {
+  background: #ff4b4b;
+  border-color: #000;
+} 

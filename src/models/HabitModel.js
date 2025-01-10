@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 
 // Habit Schema
 const habitSchema = new mongoose.Schema({
-    _id: {},
-    userId: {
+    _id: {
         type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
+    firebaseUid: {
+        type: String,
         ref: 'User',
         required: true,
     },
@@ -29,11 +32,22 @@ const habitSchema = new mongoose.Schema({
             enum: ['times', 'mins', 'hours'],
             required: true,
         },
-        type: {
-            type: String,
-            enum: ['eachtime', 'intotal'],
-            default: null,
-        },
+        timeIfUnitIsTime: {
+            timeAmount: {
+                type: Number,
+                default: null
+            },
+            timeUnit: {
+                type: String,
+                enum: ['mins', 'hours'],
+                default: null
+            },
+            timeType: {
+                type: String,
+                enum: ['eachtime', 'intotal'],
+                default: null,
+            },
+        }
     },
     dates: {
         start: {
@@ -49,4 +63,4 @@ const habitSchema = new mongoose.Schema({
     collection: "Habits"
 });
 
-module.exports = mongoose.model("Habit", habitSchema);
+module.exports = mongoose.model("Habits", habitSchema);

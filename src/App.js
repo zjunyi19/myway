@@ -2,6 +2,7 @@ import './App.css';
 import Home from './components/pages/home/Home';
 import Login from './components/pages/login/Login';
 import Register from './components/pages/register/Register';
+import SingleHabit from './components/pages/habits/singleHabit/SingleHabit';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './contexts/authContext/AuthProvider';
 
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/habits/:id" element={<SingleHabit />} />
         </Routes>
       </Router>
     </AuthProvider>

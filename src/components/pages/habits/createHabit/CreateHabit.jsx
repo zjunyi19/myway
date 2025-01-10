@@ -1,5 +1,6 @@
 import "./createhabit.css";
 import { useState } from "react";
+import { useAuth } from "../../../../contexts/authContext/AuthProvider";
 
 const getTodayString = () => {
   const today = new Date();
@@ -7,46 +8,69 @@ const getTodayString = () => {
 };
 
 export default function CreateHabit({ onCreateHabitClose }) {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [habitName, setHabitName] = useState("");
   const [frequency, setFrequency] = useState("day");
   const [targetAmount, setTargetAmount] = useState("");
   const [targetUnit, setTargetUnit] = useState("times");
-  const [targetType, setTargetType] = useState("");
+  const [timeAmount, setTimeAmount] = useState("");
+  const [timeUnit, setTimeUnit] = useState("mins");
+  const [timeType, setTimeType] = useState("eachtime");
   const [startDate, setStartDate] = useState(getTodayString());
   const [endDate, setEndDate] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!habitName.trim()) {
-      setError("Please enter a habit name");
+    if (!habitName.trim() || !targetAmount) {
+      setError("Please enter all the fields");
       return;
     }
 
-    if (!targetAmount) {
-      setError("Please enter a target amount");
-      return;
-    }
-
+    setIsLoading(true);
     const habitData = {
-      name: habitName.trim(),
+      firebaseUid: user.uid,
+      habitName: habitName.trim(),
       frequency,
       target: {
         amount: parseInt(targetAmount),
         unit: targetUnit,
-        type: targetUnit === "times" ? null : targetType
+        timeIfUnitIsTime: targetUnit === "times" ? {
+          timeAmount: parseInt(timeAmount) || null,
+          timeUnit,
+          timeType
+        } : null
       },
       dates: {
         start: startDate,
         end: endDate || null
-      },
-      createdAt: new Date().toISOString()
+      }
     };
 
-    console.log("New Habit:", habitData);
-    onCreateHabitClose();
+    try {
+      const response = await fetch('http://localhost:5001/api/habits/createHabit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(habitData)
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to create habit');
+        
+      } else {
+        onCreateHabitClose();
+
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
   };
 
   const handleOverlayClick = (e) => {
@@ -65,7 +89,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
           type="submit"
           form="habitForm"
         >
-          Submit
+          {isLoading ? "Submitting..." : "Submit"}
         </button>
         
         <form 
@@ -86,6 +110,26 @@ export default function CreateHabit({ onCreateHabitClose }) {
           </div>
 
           <div className="createHabitInputGroup">
+            <input
+              type="number"
+              className="createHabitInput short"
+              placeholder="enter number"
+              value={targetAmount}
+              onChange={(e) => setTargetAmount(e.target.value)}
+              min="1"
+            />
+
+            <select
+              className="createHabitSelect"
+              value={targetUnit}
+              onChange={(e) => setTargetUnit(e.target.value)}
+            >
+              <option value="times">times</option>
+              <option value="mins">mins</option>
+              <option value="hours">hours</option>
+            </select>
+
+      
             <label>every</label>
             <select 
               className="createHabitSelect"
@@ -97,34 +141,34 @@ export default function CreateHabit({ onCreateHabitClose }) {
               <option value="month">month</option>
             </select>
 
-            <label>for</label>
-            <input 
-              type="number" 
-              className="createHabitInput short"
-              placeholder="10"
-              min="1"
-              max="60"
-              value={targetAmount}
-              onChange={(e) => setTargetAmount(e.target.value)}
-            />
-            <select 
-              className="createHabitSelect"
-              value={targetUnit}
-              onChange={(e) => setTargetUnit(e.target.value)}
-            >
-              <option value="times">times</option>
-              <option value="mins">mins</option>
-              <option value="hours">hours</option>
-            </select>
-            {(targetUnit === "mins" || targetUnit === "hours") && (
-              <select 
-                className="createHabitSelect wide"
-                value={targetType}
-                onChange={(e) => setTargetType(e.target.value)}
-              >
-                <option value="eachtime">each time</option>
-                <option value="intotal">in total</option>
-              </select>
+            {targetUnit === "times" && (
+              <div className="createHabitInputGroup">
+                <label>for</label>
+                <input
+                  type="number"
+                  className="createHabitInput"
+                  placeholder="enter number (optional)"
+                  value={timeAmount}
+                  onChange={(e) => setTimeAmount(e.target.value)}
+                  min="1"
+                />
+                <select
+                  className="createHabitSelect"
+                  value={timeUnit}
+                  onChange={(e) => setTimeUnit(e.target.value)}
+                >
+                  <option value="mins">minutes</option>
+                  <option value="hours">hours</option>
+                </select>
+                <select
+                  className="createHabitSelect wide"
+                  value={timeType}
+                  onChange={(e) => setTimeType(e.target.value)}
+                >
+                  <option value="eachtime">each time</option>
+                  <option value="intotal">in total</option>
+                </select>
+              </div>
             )}
           </div>
 
@@ -149,6 +193,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
                   className="createHabitInput"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
+                  min={startDate}
                 />
               </div>
             </div>

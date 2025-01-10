@@ -46,8 +46,7 @@ export default function Register() {
 
     try {
       setIsRegistering(true);
-
-      // 1. 同时检查用户名和邮箱是否可用
+      // 1. check if username and email are available
       const checkCredentialsResponse = await fetch('http://localhost:5001/api/users/check-credentials', {
         method: 'POST',
         headers: {
@@ -61,11 +60,11 @@ export default function Register() {
         throw new Error(checkResult.message);
       }
 
-      // 2. 创建 Firebase 用户
+      // 2. create firebase user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       try {
-        // 3. 保存用户数据到 MongoDB
+        // 3. save user data to MongoDB
         const response = await fetch('http://localhost:5001/api/users/register', {
           method: 'POST',
           headers: {
@@ -86,9 +85,9 @@ export default function Register() {
           // 5. 如果 MongoDB 保存失败，删除 Firebase 用户
           await userCredential.user.delete();
           throw new Error(responseData.message || 'Failed to save user data');
+        } else {
+          navigate("/login");
         }
-
-        navigate("/login");
       } catch (mongoError) {
         // 如果 MongoDB 操作失败，删除 Firebase 用户
         await userCredential.user.delete();
@@ -96,9 +95,8 @@ export default function Register() {
       }
 
     } catch (error) {
-      setIsRegistering(false);
-      console.error('Registration error:', error);
       
+      console.error('Registration error:', error);
       if (error.code) {
         // Firebase 错误
         switch (error.code) {
@@ -116,6 +114,7 @@ export default function Register() {
         setError(error.message || "Registration failed. Please try again.");
       }
     }
+    setIsRegistering(false);
   };
 
   return (

@@ -123,4 +123,23 @@
   font-weight: 600;
   color: #000;
 }
+
+.createFirstHabitButton {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.createFirstHabitButton:hover {
+  background: #ff4b4b;
+  color: white;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #000;
+}
   

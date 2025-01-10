@@ -43,9 +43,8 @@ export default function UserInfo({ onSettingsClose }) {
       }
     };
 
-    if (user) {
-      fetchUserData();
-    }
+    fetchUserData();
+  
   }, [user]);
 
   const handleOverlayClick = (e) => {
