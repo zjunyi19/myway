@@ -6,7 +6,6 @@ const completionSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        trim: true,
         index: true
     },
   habitId: {
@@ -27,6 +26,8 @@ const completionSchema = new mongoose.Schema({
     type: Number, // 用户完成任务所花费的时间
     required: false,
   },
+}, {
+  collection: "Completions"
 });
 
-module.exports = mongoose.model('Completion', completionSchema);
+module.exports = mongoose.model('Completions', completionSchema);
