@@ -2,7 +2,6 @@ import './App.css';
 import Home from './components/pages/home/Home';
 import Login from './components/pages/login/Login';
 import Register from './components/pages/register/Register';
-import UserInfo from './components/pages/settings/userinfo/UserInfo';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './contexts/authContext/AuthProvider';
 

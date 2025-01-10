@@ -47,25 +47,25 @@ export default function Register() {
     try {
       setIsRegistering(true);
 
-      // 1. Check if username is available
-      const checkResponse = await fetch('http://localhost:5001/api/users/check-username', {
+      // 1. 同时检查用户名和邮箱是否可用
+      const checkCredentialsResponse = await fetch('http://localhost:5001/api/users/check-credentials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ username, email }),
       });
 
-      const checkResult = await checkResponse.json();
-      if (!checkResponse.ok) {
-        throw new Error(checkResult.message || 'Username is not available');
+      const checkResult = await checkCredentialsResponse.json();
+      if (!checkCredentialsResponse.ok) {
+        throw new Error(checkResult.message);
       }
 
-      // 2. If username is available, create Firebase user
+      // 2. 创建 Firebase 用户
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       try {
-        // 3. Save user data to MongoDB
+        // 3. 保存用户数据到 MongoDB
         const response = await fetch('http://localhost:5001/api/users/register', {
           method: 'POST',
           headers: {
@@ -74,6 +74,7 @@ export default function Register() {
           body: JSON.stringify({
             firebaseUid: userCredential.user.uid,
             username,
+            email,
             firstName,
             lastName,
           }),
@@ -82,7 +83,7 @@ export default function Register() {
         const responseData = await response.json();
         
         if (!response.ok) {
-          // 4. 如果 MongoDB 保存失败，删除 Firebase 用户
+          // 5. 如果 MongoDB 保存失败，删除 Firebase 用户
           await userCredential.user.delete();
           throw new Error(responseData.message || 'Failed to save user data');
         }

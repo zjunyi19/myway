@@ -4,12 +4,13 @@ const User = require('../models/UserModel');
 
 router.post('/register', async (req, res) => {
   try {
-    const { firebaseUid, username, firstName, lastName } = req.body;
+    const { firebaseUid, username, email, firstName, lastName } = req.body;
 
     // Create new user and save to database
     const user = new User({
       firebaseUid,
       username,
+      email,
       firstName,
       lastName,
     });
@@ -28,20 +29,34 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/check-username', async (req, res) => {
+// 合并检查用户名和邮箱
+router.post('/check-credentials', async (req, res) => {
   try {
-    const { username } = req.body;
-    console.log('Checking username:', username);
+    const { username, email } = req.body;
+    console.log('Checking credentials:', { username, email });
     
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
+    // 同时检查用户名和邮箱
+    const [usernameExists, emailExists] = await Promise.all([
+      User.findOne({ username }),
+      User.findOne({ email })
+    ]);
+
+    if (usernameExists && emailExists) {
+      return res.status(400).json({ message: 'Both username and email already exist' });
+    }
+    
+    if (usernameExists) {
       return res.status(400).json({ message: 'Username already exists' });
     }
     
-    res.status(200).json({ message: 'Username is available' });
+    if (emailExists) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+    
+    res.status(200).json({ message: 'Username and email are available' });
   } catch (error) {
-    console.error('Username check error:', error);
-    res.status(500).json({ message: 'Error checking username availability' });
+    console.error('Credentials check error:', error);
+    res.status(500).json({ message: 'Error checking credentials availability' });
   }
 });
 
