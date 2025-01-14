@@ -194,12 +194,14 @@ export default function Home() {
                                                 console.log("habit", habit.habitName);
                                         
                                                 const weekProgress = calculateWeekProgress(habit, completions[habit._id]);
+                                                const weekCount = completions[habit._id]?.length || 0;
 
                                                 return (
                                                     <div key={`${habit._id}-${day}`} className="checkboxCell">
                                                         <ProgressCheckbox
                                                             progress={weekProgress.progress}
                                                             showCheck={weekProgress.showCheck}
+                                                            count={weekCount}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleCheckboxClick(habit._id, day);

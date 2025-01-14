@@ -11,40 +11,35 @@
 
 .progressBackground {
     fill: none;
-    stroke: #e0e0e0;
+    stroke: #159a70;
     transition: all 0.3s ease;
+    opacity: 0.3;
 }
 
 .progressBackground.completed {
-    stroke: #4CAF50;
+    stroke: #159a70;
+    opacity: 1;
 }
 
 .completedCircle {
-    fill: none;
-    stroke: #4CAF50;
-    opacity: 0.2;
+    fill: #159a70;
+    stroke: #159a70;
+    opacity: 0.8;
 }
 
-.progressCircle {
-    fill: none;
-    stroke: #4CAF50;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    transition: stroke-dashoffset 0.3s ease;
+.progressFill {
+    fill: #159a70;
+    opacity: 0.3;
+    transition: all 0.3s ease;
 }
 
-.checkmark {
-    stroke: #4CAF50;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    animation: checkmark 0.2s ease-in-out forwards;
+.progressCount {
+    fill: #333;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    user-select: none;
 }
 
-@keyframes checkmark {
-    0% {
-        stroke-dasharray: 0, 100;
-    }
-    100% {
-        stroke-dasharray: 100, 100;
-    }
+.progressCount.completed {
+    fill: #fff;
 } 
