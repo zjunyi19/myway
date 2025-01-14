@@ -1,0 +1,110 @@
+.timerBottomBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 2px solid #000;
+    padding: 1rem 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 0 #000;
+}
+
+.timerContent {
+    display: grid;
+    grid-template-columns: 48px auto 1fr auto;
+    gap: 0;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 48px;
+}
+
+/* Back Button */
+.backButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #666;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.backButton:not(.disabled):hover {
+    color: #000;
+    transform: scale(1.1);
+}
+
+.backButton.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Habit Name */
+.habitName {
+    font-weight: 600;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 0.5rem;
+}
+
+/* Timer */
+.timer {
+    font-family: monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border: 2px solid #000;
+    border-radius: 10px;
+    background: #f5f5f5;
+    width: 160px;
+    text-align: center;
+    justify-self: center;
+}
+
+/* Timer Controls */
+.timerControls {
+    display: flex;
+    gap: 0.5rem;
+    justify-self: end;
+}
+
+.timerButton {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.timerButton:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.timerButton.stop {
+    border-color: #ff4b4b;
+    color: #ff4b4b;
+}
+
+.timerButton.stop:hover {
+    background: #ff4b4b;
+    color: white;
+}

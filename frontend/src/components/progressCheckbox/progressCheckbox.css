@@ -1,0 +1,50 @@
+.progressCheckbox {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.progressCheckbox:hover {
+    transform: translate(-1px, -1px);
+    filter: brightness(1.1);
+}
+
+.progressBackground {
+    fill: none;
+    stroke: #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.progressBackground.completed {
+    stroke: #4CAF50;
+}
+
+.completedCircle {
+    fill: none;
+    stroke: #4CAF50;
+    opacity: 0.2;
+}
+
+.progressCircle {
+    fill: none;
+    stroke: #4CAF50;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.checkmark {
+    stroke: #4CAF50;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: checkmark 0.2s ease-in-out forwards;
+}
+
+@keyframes checkmark {
+    0% {
+        stroke-dasharray: 0, 100;
+    }
+    100% {
+        stroke-dasharray: 100, 100;
+    }
+} 
