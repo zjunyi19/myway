@@ -8,6 +8,7 @@ import UserInfo from "../settings/userinfo/UserInfo";
 import EmptyHabitList from "../emptyhabitlist/EmptyHabitList";
 import EmptyUser from "../emptyuser/EmptyUser";
 import SingleHabit from "../habits/singleHabit/SingleHabit";
+import TimerBottomBar from "../../timerBottomBar/TimerBottomBar";
 import "./home.css";
 
 export default function Home() {
@@ -18,6 +19,8 @@ export default function Home() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [selectedHabitId, setSelectedHabitId] = useState(null);
+    const [timerHabit, setTimerHabit] = useState(null);
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
 
     useEffect(() => {
         if (!user) {
@@ -50,8 +53,29 @@ export default function Home() {
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };
     const handleSettingsOpen = () => { setShowSettings(true); };
     const handleSettingsClose = () => { setShowSettings(false); };
-    const handleHabitClick = (habitId) => { setSelectedHabitId(habitId); };
+    const handleHabitClick = (habitId) => { 
+        if (!isTimerRunning) {
+            setSelectedHabitId(habitId);
+        }
+    };
     const handleHabitClose = () => { setSelectedHabitId(null); };
+    const handleCheckboxClick = (habitId, day) => {
+        console.log(`Checkbox clicked for habit ${habitId} on ${day}`);
+    };
+    const handleTimerClick = (e, habit) => {
+        e.stopPropagation();  // 阻止事件冒泡
+        if (!isTimerRunning) {
+            setTimerHabit(habit);
+        }
+    };
+
+    const handleTimerClose = () => { 
+        setTimerHabit(null);
+        setIsTimerRunning(false);
+    };
+
+    const handleTimerStart = () => { setIsTimerRunning(true); };
+    const handleTimerStop = () => { setIsTimerRunning(false); };
 
     const handleHabitUpdate = async (habitId, updatedData) => {
         try {
@@ -142,14 +166,27 @@ export default function Home() {
                                         onClick={() => handleHabitClick(habit._id)}
                                     >
                                         <div className="habitInfo">
+                                            <button 
+                                                className="timerStartButton"
+                                                onClick={(e) => handleTimerClick(e, habit)}
+                                            >
+                                                <i className="fa-regular fa-clock"></i>
+                                            </button>
                                             <div className="habitName">{habit.habitName}</div>
                                             <div className="habitTarget">
                                                 {habit.target.name}
                                             </div>
                                         </div>
+                                        
                                         {weekDays.map(day => (
                                             <div key={`${habit._id}-${day}`} className="checkboxCell">
-                                                <div className="checkbox"/>
+                                                <div 
+                                                    className="checkbox"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleCheckboxClick(habit._id, day);
+                                                    }}
+                                                />
                                             </div>
                                         ))}
                                     </div>
@@ -169,6 +206,14 @@ export default function Home() {
                     habitId={selectedHabitId}
                     onHabitClose={handleHabitClose}
                     onHabitUpdate={handleHabitUpdate}
+                />
+            )}
+            {timerHabit && (
+                <TimerBottomBar
+                    habit={timerHabit}
+                    onClose={handleTimerClose}
+                    onStart={handleTimerStart}
+                    onStop={handleTimerStop}
                 />
             )}
         </div>

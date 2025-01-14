@@ -29,7 +29,6 @@ export default function CreateHabit({ onCreateHabitClose }) {
       setError("Please enter all the fields");
       return;
     }
-
     setIsLoading(true);
     const habitData = {
       firebaseUid: user.uid,

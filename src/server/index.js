@@ -1,8 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const habitRoutes = require('../routes/habits.js');
+const completionRoutes = require('../routes/completion.js');
 const connectDB = require('./connect.cjs');
 const userRoutes = require('../routes/users.js');
-const habitRoutes = require('../routes/habits.js');
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 
@@ -13,6 +16,7 @@ app.use(express.json());
 // 路由
 app.use('/api/users', userRoutes);
 app.use('/api/habits', habitRoutes);
+app.use('/api/completions', completionRoutes);
 
 // 连接数据库
 connectDB()

@@ -58,12 +58,14 @@
 
 .emptyUserButton.login {
   background: white;
+  height: 3rem;
   color: #000;
 }
 
 .emptyUserButton.register {
   background: #000;
   color: white;
+  height: 3rem;
 }
 
 .emptyUserButton:hover {

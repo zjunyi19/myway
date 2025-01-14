@@ -74,6 +74,7 @@
   border: 2px solid #000;
   border-radius: 10px;
   background: white;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -82,10 +83,22 @@
   box-shadow: 4px 4px 0 #000;
 }
 
+.habitInfo {
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .habitName {
   font-size: 1.1rem;
   font-weight: 600;
   color: #000;
+}
+
+.habitTarget {
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .checkboxCell {
@@ -141,5 +154,25 @@
   color: white;
   transform: translate(-2px, -2px);
   box-shadow: 4px 4px 0 #000;
+}
+
+.timerStartButton {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  padding: 0;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.timerStartButton:hover {
+  transform: scale(1.1);
+  color: #000;
 }
   
