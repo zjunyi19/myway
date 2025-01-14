@@ -46,7 +46,6 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
                 date: new Date().toISOString(),
                 duration: time
             };
-            console.log('Completion data:', completion);
             const response = await fetch('http://localhost:5001/api/completions/create', {
                 method: 'POST',
                 headers: {
@@ -61,7 +60,6 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
                 throw new Error(data.message || 'Failed to save completion');
             }
 
-            console.log('Completion saved successfully:', data);
             // 重置并关闭计时器
             setTime(0);
             onStop(); // 通知父组件计时器已停止

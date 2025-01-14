@@ -6,15 +6,12 @@ const Completion = require('../models/CompletionModel');
 router.post('/create', async (req, res) => {
     try {
         const { habitId, userId, date, duration } = req.body;
-        console.log('Received completion data:', req.body);
         const completion = new Completion({
             habitId,
             userId,
             date,
             timeSpend: duration,
         });
-
-        console.log('Completion data:', completion);
 
         const savedCompletion = await completion.save();
         res.status(201).json(savedCompletion);
