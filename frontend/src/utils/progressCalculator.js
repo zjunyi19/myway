@@ -1,16 +1,13 @@
+import { getWeekStart, getWeekEnd } from './dateUtils';
+
+const weekStart = getWeekStart(); 
+const weekEnd = getWeekEnd();
+
 // 计算本周进度
 export const calculateWeekProgress = (habit, completions) => {
     // 如果completions为空，返回0
     if (!completions || !completions.length) return { progress: 0, showCheck: false };
 
-    const weekStart = new Date();
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
-    weekStart.setHours(0, 0, 0, 0);
-    
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
-    
     // 得到所有在本周完成的completions
     const weekCompletions = completions.filter(c => {
         const date = new Date(c.date);
@@ -21,14 +18,18 @@ export const calculateWeekProgress = (habit, completions) => {
 
     const totalTimeThisWeek = weekCompletions.reduce((sum, c) => sum + c.timeSpend, 0);
 
-    
     // 如果是times
     if (habit.target.unit === 'times') {
-        // 如果timeamount为空
+        // 如果timeamount为空，只要显示完成了几次
         if (!habit.target.timeIfUnitIsTime.timeAmount) {
+            // 当frequency是week
+            // progress = 每天完成次数的和 / 每周目标次数
             if (habit.frequency === 'week') {
-                return { progress: (weekCompletions.length / habit.target.amount) * 100, showCheck: weekCompletions.length >= habit.target.amount };
-            } else {
+                return { progress: (weekCompletions.length / habit.target.amount) * 100, count: weekCompletions.length };
+            } 
+            // 当frequency是day
+            // progress = min(每天完成次数的和， 每日目标次书) / (每日目标次书 * 7)
+            else {
                 // For daily frequency, count how many days met the target amount
                 const dailyCompletions = new Map(); // Store completions by day
                 weekCompletions.forEach(completion => {
@@ -41,7 +42,7 @@ export const calculateWeekProgress = (habit, completions) => {
                 const totalCappedCompletions = Array.from(dailyCompletions.values())
                     .reduce((sum, count) => sum + count, 0);
 
-                return { progress: (totalCappedCompletions/ habit.target.amount * 7) * 100, showCheck: totalCappedCompletions >= habit.target.amount * 7 };
+                return { progress: (totalCappedCompletions/ habit.target.amount * 7) * 100, count: totalCappedCompletions };
             }
         }
         
@@ -51,9 +52,6 @@ export const calculateWeekProgress = (habit, completions) => {
             mins: 60,
             hours: 3600
         }[habit.target.timeIfUnitIsTime.timeUnit]
-
-        // 3 times every day 1 min each time
-        // 3 times every week 1 min each time
 
         // 如果timeType为in total
         if (habit.target.timeIfUnitIsTime.timeType === 'intotal') {
