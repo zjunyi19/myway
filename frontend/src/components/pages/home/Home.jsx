@@ -72,7 +72,7 @@ export default function Home() {
         };
 
         fetchHabitsAndCompletions();
-    }, [user, showCreateHabit]);
+    }, [user]);
 
     const handleCreateHabitClose = () => { setShowCreateHabit(false); };
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };

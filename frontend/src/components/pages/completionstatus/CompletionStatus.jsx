@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './completionstatus.module.css';
 import { getMonthNames } from '../../../utils/dateHelpers';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,7 +10,8 @@ import {
   CategoryScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  BarElement
 } from 'chart.js';
 
 ChartJS.register(
@@ -20,7 +21,8 @@ ChartJS.register(
   CategoryScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  BarElement
 );
 
 export default function CompletionStatus({ habit, day, onClose }) {
@@ -80,28 +82,54 @@ export default function CompletionStatus({ habit, day, onClose }) {
   };
 
   const getChartData = () => {
-    const labels = completionsToday.map(completion => {
+    const hourlyData = {};
+
+    completionsToday.forEach(completion => {
       const date = new Date(completion.date);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const hour = date.getHours();
+      if (!hourlyData[hour]) {
+        hourlyData[hour] = 0;
+      }
+      hourlyData[hour] += completion.timeSpend / 60;
     });
 
-    const data = completionsToday.map(completion => completion.timeSpend);
-
-    console.log('Chart Labels:', labels);
-    console.log('Chart Data:', data);
+    const labels = Object.keys(hourlyData).map(hour => `${hour}:00`);
+    const data = Object.values(hourlyData);
 
     return {
       labels,
       datasets: [
         {
-          label: 'Time Spent',
+          label: 'Time Spent (Minutes)',
           data,
           fill: false,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(75,192,192,1)',
+          backgroundColor: 'rgba(255,182,193,0.4)',
+          borderColor: 'rgba(255,182,193,1)',
         },
       ],
     };
+  };
+
+  const chartOptions = {
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Time',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Minutes',
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
   };
 
   return (
@@ -116,8 +144,13 @@ export default function CompletionStatus({ habit, day, onClose }) {
             <i className="fa-solid fa-right-long"></i>
           </button>
         </div>
+
+        <div className={styles.goalSection}>
+            <p>My goal is to {habit.habitName} {habit.target.amount} {habit.target.unit} every {habit.frequency}</p>
+            {habit.target.timeIfUnitIsTime.timeAmount && <p>and {habit.target.timeIfUnitIsTime.timeAmount} {habit.target.timeIfUnitIsTime.timeUnit}</p>}
+        </div>
+
         <div className={styles.body}>
-          <h3>{habit.habitName}</h3>
           <div className={styles.circles}>
             <div className={styles.circle}>
               <span>{completionsToday.length}</span>
@@ -129,8 +162,9 @@ export default function CompletionStatus({ habit, day, onClose }) {
             </div>
           </div>
           <div className={styles.chart}>
-            <Line data={getChartData()} />
+            <Bar data={getChartData()} options={chartOptions} />
           </div>
+
         </div>
       </div>
     </div>
