@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./userinfo.css";
+import styles from "./userinfo.module.css";
 import { useAuth } from '../../../../contexts/AuthContext';
 import { auth } from '../../../../firebase/auth';
 import { doPasswordChange, doSignOut } from "../../../../firebase/auth";
@@ -49,7 +49,7 @@ export default function UserInfo({ onSettingsClose }) {
   }, [user]);
 
   const handleOverlayClick = (e) => {
-    if (e.target.className === 'userInfo') {
+    if (e.target === e.currentTarget) {
       onSettingsClose();
     }
   };
@@ -90,55 +90,55 @@ export default function UserInfo({ onSettingsClose }) {
   };
 
   return (
-    <div className="userInfo" onClick={handleOverlayClick}>
-      <div className="userInfoWrapper">
-        <button className="closeButton" onClick={onSettingsClose}>×</button>
+    <div className={styles.userInfo} onClick={handleOverlayClick}>
+      <div className={styles.userInfoWrapper}>
+        <button className={styles.closeButton} onClick={onSettingsClose}>×</button>
 
-        <h1 className="userInfoTitle">User Profile</h1>
+        <h1 className={styles.userInfoTitle}>User Profile</h1>
         
-        <div className="userInfoItem">
+        <div className={styles.userInfoItem}>
           <label>Username</label>
-          <div className="userInfoValue">{userData?.username}</div>
+          <div className={styles.userInfoValue}>{userData?.username}</div>
         </div>
 
-        <div className="userInfoItem">
+        <div className={styles.userInfoItem}>
           <label>Name</label>
-          <div className="userInfoValue">
+          <div className={styles.userInfoValue}>
             {userData ? `${userData.firstName} ${userData.lastName}` : ''}
           </div>
         </div>
 
-        <div className="userInfoItem">
+        <div className={styles.userInfoItem}>
           <label>Email</label>
-          <div className="userInfoValue">{user?.email}</div>
+          <div className={styles.userInfoValue}>{user?.email}</div>
         </div>
 
         <form className="passwordChangeForm" onSubmit={handlePasswordChange}>
           <h2>Change Password</h2>
-          <div className="passwordInputContainer">
+          <div className={styles.passwordInputContainer}>
             <input
               type="password"
               placeholder="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="passwordInput"
+              className={styles.passwordInput}
             />
             <input
               type="password"
               placeholder="Confirm new password"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
-              className="passwordInput"
+              className={styles.passwordInput}
             />
           </div>
-          <button type="submit" className="passwordChangeButton">Update Password</button>
+          <button type="submit" className={styles.passwordChangeButton}>Update Password</button>
         </form>
 
-        {error && <span className="error">{error}</span>}
-        {message && <span className="success">{message}</span>}
+        {error && <span className={styles.error}>{error}</span>}
+        {message && <span className={styles.success}>{message}</span>}
 
         <button 
-          className="userLogoutButton" 
+          className={styles.userLogoutButton} 
           onClick={() => {
             doSignOut();
             onSettingsClose();

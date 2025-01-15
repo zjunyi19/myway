@@ -1,0 +1,86 @@
+.statusOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.status {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    border: 2px solid #000;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.header button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.header button:hover {
+    color: #007BFF; /* Change to your preferred hover color */
+}
+
+.body {
+    text-align: center;
+}
+
+.body h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.circles {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.circle span {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.circle p {
+  margin: 0;
+  font-size: 0.7em;
+  color: #666;
+}

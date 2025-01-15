@@ -92,11 +92,13 @@
     align-items: center;
     justify-content: center;
     padding: 0;
+    color: #000;
 }
 
 .timerButton:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 #000;
+    transform: scale(1.1);
+    box-shadow: none;
+    color: #000;
 }
 
 .timerButton.stop {

@@ -1,0 +1,138 @@
+.login {
+  height: calc(100vh - 50px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.loginTitle {
+  font-size: 50px;
+  color: #000;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.loginForm {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.loginForm > label {
+  font-size: 20px;
+  margin: 10px 0;
+  color: #000;
+  font-weight: 600;
+}
+
+.loginInput {
+  padding: 10px;
+  background-color: white;
+  border: 2px solid #000;
+  border-radius: 10px;
+  width: 500px;
+  height: 60px;
+  color: #000;
+  font-size: 16px;
+}
+
+.loginInput:focus {
+  outline: none;
+  border: 2px solid #ff4b4b;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.loginButton {
+  margin-top: 20px;
+  cursor: pointer;
+  background-color: #000;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 4px 4px 0 #ff4b4b;
+}
+
+.loginButton:hover {
+  background-color: #ff4b4b;
+  color: #000;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #000;
+  border-color: #ff4b4b;
+}
+
+.loginRegisterButton {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: white;
+  cursor: pointer;
+  padding: 12px 20px;
+  border: 2px solid #000;
+  color: #000;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.loginRegisterButton:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 #000;
+}
+
+.loginError {
+  color: #ff4b4b;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.forgotPassword {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.resetButton {
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  color: #ff4b4b;
+}
+
+.resetMessage {
+  color: #00c853;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+  display: block;
+}
+
+.resetInput {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.resetInput:focus {
+  outline: none;
+  border-color: #ff4b4b;
+  box-shadow: 4px 4px 0 #000;
+}

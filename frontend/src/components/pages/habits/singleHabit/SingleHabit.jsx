@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import "./singlehabit.css";
+import styles from './singlehabit.module.css';
 
 export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
   const [habit, setHabit] = useState(null);
@@ -85,16 +85,17 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
   }
 
   return (
-
-    <div className="singleHabitOverlay" onClick={(e) => { if (e.target.className === 'singleHabitOverlay') onHabitClose();}}>
-      <div className="singleHabit">
-        <h2>Habit Details</h2>
-        <button className="closeButton" onClick={onHabitClose}>×</button>
+    <div className={styles.singleHabitOverlay} onClick={(e) => { if (e.target.className === styles.singleHabitOverlay) onHabitClose();}}>
+      <div className={styles.singleHabit}>
+        <div className={styles.header}>
+          <h2>Habit Details</h2>
+          <button className={styles.closeButton} onClick={onHabitClose}>×</button>
+        </div>
         
         <form onSubmit={handleSubmit}>
           
           {/* First Line */}
-          <div className="habitField">
+          <div className={styles.habitField}>
             <label>I want to</label>
             <input
               type="text"
@@ -108,8 +109,8 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
           </div>
           
           {/* Second Line */}
-          <div className="habitField">
-            <div className="targetInputs">
+          <div className={styles.habitField}>
+            <div className={styles.targetInputs}>
               <input
                 type="number"
                 value={isEditing ? editedHabit.target.amount : habit.target.amount}
@@ -143,7 +144,7 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
                 <option value="hours">hours</option>
               </select>
 
-              <span className="separator">every</span>
+              <span className={styles.separator}>every</span>
 
               <select
                 value={isEditing ? editedHabit.frequency : habit.frequency}
@@ -161,9 +162,9 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
 
           {/* Third Line */}
           {editedHabit.target.unit === 'times' && (
-            <div className="habitField">
+            <div className={styles.habitField}>
               <label>for</label>
-              <div className="timeInputs">
+              <div className={styles.timeInputs}>
                 <input
                   type="number"
                   value={isEditing ? editedHabit.target.timeIfUnitIsTime?.timeAmount : habit.target.timeIfUnitIsTime?.timeAmount}
@@ -218,7 +219,7 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
           )}
 
           {/* Start and End Date */}
-          <div className="habitField">
+          <div className={styles.habitField}>
             <label>start from</label>
             <input
               type="date"
@@ -234,7 +235,7 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
             />
           </div>
 
-          <div className="habitField">
+          <div className={styles.habitField}>
             <label>end on {isEditing? "(optional)" : ""}</label>
             <input
               type="date"
@@ -251,7 +252,7 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
             />
           </div>
 
-          <div className="habitButtons">
+          <div className={styles.habitButtons}>
             {isEditing ? (
               // When editing, show Cancel and Save Change Buttons
               <>
@@ -270,7 +271,7 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
                 </button>
                 <button 
                   type="button"
-                  className="deleteButton" 
+                  className={styles.deleteButton} 
                   onClick={() => {
                     if (window.confirm('Are you sure you want to delete this habit?')) {
                       onHabitUpdate(habitId, null);

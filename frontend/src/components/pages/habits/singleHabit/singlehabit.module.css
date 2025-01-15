@@ -48,8 +48,8 @@
 }
 
 .closeButton:hover {
-  background: #ff4b4b;
-  color: white;
+  color: #666;
+  transform: translate(-2px, -2px);
 }
 
 .habitField {
@@ -59,18 +59,12 @@
 .habitField label {
   display: block;
   margin-bottom: 8px;
-  color: #666;
+  color: #221d1d;
 }
 
 .habitField input[type="text"],
-.habitField input[type="date"] {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.habitField input,
+.habitField input[type="number"],
+.habitField input[type="date"],
 .habitField select {
   width: 100%;
   padding: 0.75rem;
@@ -96,20 +90,14 @@
 
 .targetInputs input[type="number"] {
   width: 80px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
 }
 
 .targetInputs select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
+  width: auto;
 }
 
-.targetInputs .separator {
-  margin: 0 5px;
+.separator {
+  margin: 0 10px;
   color: #666;
 }
 
@@ -117,6 +105,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.timeInputs input[type="number"] {
+  width: 80px;
+}
+
+.timeInputs select {
+  width: auto;
 }
 
 .habitButtons {
@@ -135,6 +131,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: white;
+  color: #000;
 }
 
 .habitButtons button:hover {
@@ -142,14 +139,12 @@
   box-shadow: 4px 4px 0 #000;
 }
 
-.habitButtons button[type="submit"],
-.habitButtons button.primary {
+.habitButtons button[type="submit"] {
   background: #000;
   color: white;
 }
 
-.habitButtons button[type="submit"]:hover,
-.habitButtons button.primary:hover {
+.habitButtons button[type="submit"]:hover {
   background: #ff4b4b;
 }
 
@@ -162,56 +157,6 @@
 .deleteButton:hover {
   background: #ff4b4b !important;
   color: white !important;
-}
-
-.habitDetails {
-  padding: 1rem;
-}
-
-.habitDetails .habitField span {
-  display: block;
-  padding: 0.75rem;
-  background: #f5f5f5;
-  border-radius: 10px;
-  font-size: 1rem;
-}
-
-.loadingMessage,
-.errorMessage {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.2rem;
-}
-
-.errorMessage {
-  color: #ff4b4b;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .singleHabit {
-    width: 95%;
-    padding: 1.5rem;
-  }
-
-  .targetInputs,
-  .timeInputs {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .targetInputs input,
-  .timeInputs input {
-    width: 100%;
-  }
-
-  .habitButtons {
-    flex-direction: column;
-  }
-
-  .habitButtons button {
-    width: 100%;
-  }
 }
 
 /* 禁用状态的样式 */

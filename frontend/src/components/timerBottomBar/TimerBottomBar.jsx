@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './timerBottomBar.css';
+import styles from './timerBottomBar.module.css';
 
 
 export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
@@ -72,20 +72,20 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
     };
 
     return (
-        <div className="timerBottomBar">
-            <div className="timerContent">
+        <div className={styles.timerBottomBar}>
+            <div className={styles.timerContent}>
                 <button 
-                    className={`backButton ${isRunning ? 'disabled' : ''}`} 
+                    className={`${styles.backButton} ${isRunning ? styles.disabled : ''}`}
                     onClick={!isRunning ? onClose : undefined}
                     disabled={isRunning}
                 >
                     <i className="fa-solid fa-xmark"></i>
                 </button>
-                <div className="habitName">{habit.habitName}</div>
-                <div className="timer">{formatTime(time)}</div>
-                <div className="timerControls">
+                <div className={styles.habitName}>{habit.habitName}</div>
+                <div className={styles.timer}>{formatTime(time)}</div>
+                <div className={styles.timerControls}>
                     <button 
-                        className="timerButton"
+                        className={styles.timerButton}
                         onClick={handleStartPause}
                     >
                         {timerState === 'running' ? 
@@ -95,7 +95,7 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
                     </button>
                     {timerState !== 'ready' && (
                         <button 
-                            className="timerButton stop"
+                            className={`${styles.timerButton} ${styles.stop}`}
                             onClick={handleStop}
                         >
                             <i className="fa-solid fa-stop"></i>

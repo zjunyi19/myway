@@ -1,4 +1,4 @@
-import "./login.css";
+import styles from "./login.module.css";
 import { useNavigate} from "react-router-dom";
 import { doSignInWithEmailAndPassword, doPasswordReset } from "../../../firebase/auth";
 import { useState } from "react";
@@ -44,12 +44,12 @@ export default function Login() {
   };
 
   return (
-    <div className="login">
-      <span className="loginTitle">Login</span>
-      <form className="loginForm" onSubmit={handleSubmit}>
+    <div className={styles.login}>
+      <span className={styles.loginTitle}>Login</span>
+      <form className={styles.loginForm} onSubmit={handleSubmit}>
         <label>Email</label>
         <input 
-          className="loginInput" 
+          className={styles.loginInput} 
           type="email" 
           placeholder="Enter your email..." 
           autoFocus={true}
@@ -57,26 +57,26 @@ export default function Login() {
         />
         <label>Password</label>
         <input 
-          className="loginInput" 
+          className={styles.loginInput} 
           type="password" 
           placeholder="Enter your password..."
           onChange={(e) => setPassword(e.target.value)}
         />
-        {error && <span className="loginError">{error}</span>}
-        <button className="loginButton" type="submit">Login</button>
+        {error && <span className={styles.loginError}>{error}</span>}
+        <button className={styles.loginButton} type="submit">Login</button>
 
-        <div className="forgotPassword">
+        <div className={styles.forgotPassword}>
           <button 
             type="button" 
-            className="resetButton"
+            className={styles.resetButton}
             onClick={handlePasswordReset}
           >
             Forgot Password?
           </button>
         </div>
       </form>
-      {resetMessage && <span className="resetMessage">{resetMessage}</span>}
-      <button className="loginRegisterButton" onClick={() => navigate('/register')}>
+      {resetMessage && <span className={styles.resetMessage}>{resetMessage}</span>}
+      <button className={styles.loginRegisterButton} onClick={() => navigate('/register')}>
         Register
       </button>
     </div>

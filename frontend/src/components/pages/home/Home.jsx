@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getMonthNames, getCurrentWeekDates } from '../../../utils/dateHelpers';
-import { calculateWeekProgress } from '../../../utils/progressCalculator';
+import { calculateWeekProgress, calculateDayProgress } from '../../../utils/progressCalculator';
 import { useAuth } from '../../../contexts/AuthContext';
+import { getWeekStart, getWeekEnd } from '../../../utils/progressCalculator';
 import Topbar from "../../topbar/Topbar";
 import CreateHabit from "../habits/createHabit/CreateHabit";
 import UserInfo from "../settings/userinfo/UserInfo";
@@ -10,19 +11,27 @@ import EmptyUser from "../emptyuser/EmptyUser";
 import SingleHabit from "../habits/singleHabit/SingleHabit";
 import TimerBottomBar from "../../timerBottomBar/TimerBottomBar";
 import ProgressCheckbox from "../../progressCheckbox/ProgressCheckbox";
-import "./home.css";
+import CompletionStatus from "../completionstatus/CompletionStatus";
+import styles from './home.module.css';
 
 export default function Home() {
     const { user } = useAuth();
     const [showCreateHabit, setShowCreateHabit] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [habits, setHabits] = useState([]);
+    const [statusHabit, setStatusHabit] = useState(null);
     const [completions, setCompletions] = useState({});
+    const [completionsThisWeek, setCompletionsThisWeek] = useState({});
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [selectedHabitId, setSelectedHabitId] = useState(null);
+    const [statusDay, setStatusDay] = useState(null);
     const [timerHabit, setTimerHabit] = useState(null);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const weekStart = getWeekStart();
+    const weekEnd = getWeekEnd();
+
+
 
     useEffect(() => {
         if (!user) {
@@ -43,15 +52,17 @@ export default function Home() {
                 setHabits(habitsData);
 
                 // 获取每个习惯的完成记录
-                const completionsData = {};
-                for (const habit of habitsData) {
-                    const completionsResponse = await fetch(`http://localhost:5001/api/completions/byhabit/${habit._id}`);
-                    if (completionsResponse.ok) {
-                        const habitCompletions = await completionsResponse.json();
-                        completionsData[habit._id] = habitCompletions;
-                    }
+                const completionsResponse = await fetch(`http://localhost:5001/api/completions/byuser/${user.uid}`);
+                if (!completionsResponse.ok) {
+                    throw new Error('Failed to fetch completions');
                 }
+                const completionsData = await completionsResponse.json();
+
                 setCompletions(completionsData);
+                setCompletionsThisWeek(completionsData.filter(c => {
+                    const date = new Date(c.date);
+                    return date >= weekStart && date <= weekEnd;
+                }));
             } catch (error) {
                 console.error('Error fetching data:', error);
                 setError("Failed to load data");
@@ -67,15 +78,21 @@ export default function Home() {
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };
     const handleSettingsOpen = () => { setShowSettings(true); };
     const handleSettingsClose = () => { setShowSettings(false); };
-    const handleHabitClick = (habitId) => { 
-        if (!isTimerRunning) {
+    const handleHabitClick = (habitId, e) => { 
+        if (!isTimerRunning && !e.target.closest('.checkboxCell')) {
             setSelectedHabitId(habitId);
         }
     };
     const handleHabitClose = () => { setSelectedHabitId(null); };
-    const handleCheckboxClick = (habitId, day) => {
-        console.log(`Checkbox clicked for habit ${habitId} on ${day}`);
+    const handleCompletionStatusOpen = (habit, day) => { 
+        setStatusDay(day);
+        setStatusHabit(habit);
     };
+    const handleCompletionStatusClose = () => { 
+        setStatusDay(null);
+        setStatusHabit(null);
+    };
+
     const handleTimerClick = (e, habit) => {
         e.stopPropagation();  // 阻止事件冒泡
         if (!isTimerRunning) {
@@ -140,71 +157,68 @@ export default function Home() {
     const { curMonth, weekDays, weekDates } = getCurrentWeekDates();
 
     return (
-        <div className="homepage">
+        <div className={styles.homepage}>
             <Topbar onAddClick={handleCreateHabitOpen} onSettingsClick={handleSettingsOpen} />
-            
-            <div className="contentContainer">
+            <div className={styles.contentContainer}>
                 {user ? (
                     <>
-                        <div className="calendarHeader">
-                            <div className="emptyCell"></div>
-                            <div className="monthRow" style={{ gridColumn: '2 / -1' }}>
+                        <div className={styles.calendarHeader}>
+                            <div className={styles.emptyCell}></div>
+                            <div className={styles.monthRow} style={{ gridColumn: '2 / -1' }}>
                                 {m_names[curMonth]}
                             </div>
                         </div>
 
-                        <div className="daysRow">
-                            <div className="emptyCell"></div>
+                        <div className={styles.daysRow}>
+                            <div className={styles.emptyCell}></div>
                             {weekDays.map((day, index) => (
-                                <div key={day} className="calendarDay">
-                                    <div className="dayName">{day}</div>
+                                <div key={day} className={styles.calendarDay}>
+                                    <div className={styles.dayName}>{day}</div>
                                     {day !== 'This Week' && (
-                                        <div className="dayDate">{weekDates[index]}</div>
+                                        <div className={styles.dayDate}>{weekDates[index]}</div>
                                     )}
                                 </div>
                             ))}
                         </div>
 
                         {isLoading ? (
-                            <div className="loadingMessage">Loading habits...</div>
+                            <div className={styles.loadingMessage}>Loading habits...</div>
                         ) : error ? (
-                            <div className="errorMessage">{error}</div>
+                            <div className={styles.errorMessage}>{error}</div>
                         ) : habits.length === 0 ? (
                             <EmptyHabitList onCreateHabitClick={handleCreateHabitOpen} />
                         ) : (
-                            <div className="habitsGrid">
+                            <div className={styles.habitsGrid}>
                                 {habits.map(habit => (
                                     <div 
                                         key={habit._id} 
-                                        className="habitRow" 
-                                        onClick={() => handleHabitClick(habit._id)}
+                                        className={styles.habitRow} 
+                                        onClick={(e) => handleHabitClick(habit._id, e)}
                                     >
-                                        <div className="habitInfo">
+                                        <div className={styles.habitInfo}>
                                             <button 
-                                                className="timerStartButton"
+                                                className={styles.timerStartButton}
                                                 onClick={(e) => handleTimerClick(e, habit)}
                                             >
                                                 <i className="fa-regular fa-clock"></i>
                                             </button>
-                                            <div className="habitName">{habit.habitName}</div>
+                                            <div className={styles.habitName}>{habit.habitName}</div>
                                         </div>
-                                        
                                         {weekDays.map((day, index) => {
+                                            
                                             if (day === 'This Week') {
-                                                console.log("habit", habit.habitName);
-                                        
-                                                const weekProgress = calculateWeekProgress(habit, completions[habit._id]);
-                                                const weekCount = completions[habit._id]?.length || 0;
+                                                const weekProgress = calculateWeekProgress(habit, completionsThisWeek[habit._id]);
+                                                const weekCount = completionsThisWeek[habit._id]?.length || 0;
 
                                                 return (
-                                                    <div key={`${habit._id}-${day}`} className="checkboxCell">
+                                                    <div key={`${habit._id}-${day}`} className={styles.checkboxCell}>
                                                         <ProgressCheckbox
-                                                            progress={weekProgress.progress}
-                                                            showCheck={weekProgress.showCheck}
+                                                            progress={weekProgress}
+                                                            showCheck={weekProgress >= 100}
                                                             count={weekCount}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                handleCheckboxClick(habit._id, day);
+                                                                handleCompletionStatusOpen(habit, 'This Week');
                                                             }}
                                                             size={28}
                                                         />
@@ -213,12 +227,22 @@ export default function Home() {
                                             }
 
                                             const date = new Date();
-                                            date.setDate(date.getDate() - date.getDay() + index);
+                                            date.setDate(date.getDate() - date.getDay() + index + 1);
+                                            const dayProgress = calculateDayProgress(habit, completionsThisWeek[habit._id], date); 
+                                            const dayCount = completionsThisWeek[habit._id]?.length || 0;
                                         
-                                            
                                             return (
-                                                <div key={`${habit._id}-${day}`} className="checkboxCell">
-                                                
+                                                <div key={`${habit._id}-${day}`} className={styles.checkboxCell}>
+                                                    <ProgressCheckbox
+                                                        progress={dayProgress}
+                                                        showCheck={dayProgress >= 100}
+                                                        count={dayCount}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleCompletionStatusOpen(habit, date);
+                                                        }}
+                                                        size={28}
+                                                    />
                                                 </div>
                                             );
                                         })}
@@ -233,6 +257,11 @@ export default function Home() {
             </div>
 
             {showCreateHabit && <CreateHabit onCreateHabitClose={handleCreateHabitClose} />}
+            {statusHabit && <CompletionStatus 
+                habit={statusHabit} 
+                day={statusDay} 
+                onClose={handleCompletionStatusClose} 
+            />}
             {showSettings && <UserInfo onSettingsClose={handleSettingsClose} />}
             {selectedHabitId && (
                 <SingleHabit

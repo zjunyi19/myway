@@ -1,4 +1,4 @@
-import "./register.css"
+import styles from "./register.module.css";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
@@ -118,14 +118,14 @@ export default function Register() {
   };
 
   return (
-    <div className="register">
-      <span className="registerTitle">Register</span>
-      <form className="registerForm" onSubmit={handleSubmit}>
+    <div className={styles.register}>
+      <span className={styles.registerTitle}>Register</span>
+      <form className={styles.registerForm} onSubmit={handleSubmit}>
   
         <label>Username</label> {/* Username */}
         <input
           type="text"
-          className="registerInput"
+          className={styles.registerInput}
           placeholder="Enter your username..."
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -137,7 +137,7 @@ export default function Register() {
         <label>Email</label> {/* Email */}
         <input
           type="email"
-          className="registerInput"
+          className={styles.registerInput}
           placeholder="Enter your email..."
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -146,7 +146,7 @@ export default function Register() {
         <label>First Name</label> {/* First Name */}
         <input
           type="text"
-          className="registerInput"
+          className={styles.registerInput}
           placeholder="Enter your first name..."
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
@@ -155,7 +155,7 @@ export default function Register() {
         <label>Last Name</label> {/* Last Name */}
         <input
           type="text"
-          className="registerInput"
+          className={styles.registerInput}
           placeholder="Enter your last name..."
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
@@ -164,7 +164,7 @@ export default function Register() {
         <label>Password</label> {/* Password */}
         <input
           type="password"
-          className="registerInput"
+          className={styles.registerInput}
           placeholder="Enter your password..."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -176,7 +176,7 @@ export default function Register() {
             <label>Confirm Password</label> {/* Confirm Password Only Show When Password is Filled */}
             <input
               type="password"
-              className="registerInput"
+              className={styles.registerInput}
               placeholder="Confirm your password..."
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -185,18 +185,18 @@ export default function Register() {
         )}
 
         <button 
-          className="registerButton" 
+          className={styles.registerButton} 
           type="submit"
           disabled={isRegistering}
         >  
           {isRegistering ? "Registering..." : "Register"}
         </button>                                         {/* Register Button */}
 
-        {error && <span className="error">{error}</span>} {/* Error Message */}
+        {error && <span className={styles.error}>{error}</span>} {/* Error Message */}
       </form>
 
 
-      <button className="registerLoginButton" onClick={() => navigate("/login")}>
+      <button className={styles.registerLoginButton} onClick={() => navigate("/login")}>
         Login
       </button> {/* Login Button On Top Right */}
     </div>

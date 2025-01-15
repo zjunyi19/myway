@@ -171,13 +171,14 @@
   justify-content: center;
   font-size: 1.1rem;
   padding: 0;
-  color: #666;
+  color: #000000;
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
 .timerStartButton:hover {
-  transform: scale(1.1);
-  color: #000;
+  transform: scale(1.3);
+  color: #9a1010;
+  background: transparent;
 }
   
