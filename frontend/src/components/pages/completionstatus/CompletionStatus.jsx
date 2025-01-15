@@ -103,7 +103,7 @@ export default function CompletionStatus({ habit, day, onClose }) {
           label: 'Time Spent (Minutes)',
           data,
           fill: false,
-          backgroundColor: 'rgba(255,182,193,0.4)',
+          backgroundColor: 'rgba(255,0,0,0.4)',
           borderColor: 'rgba(255,182,193,1)',
         },
       ],
