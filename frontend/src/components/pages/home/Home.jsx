@@ -10,7 +10,7 @@ import EmptyHabitList from "../emptyhabitlist/EmptyHabitList";
 import EmptyUser from "../emptyuser/EmptyUser";
 import SingleHabit from "../habits/singleHabit/SingleHabit";
 import TimerBottomBar from "../../timerBottomBar/TimerBottomBar";
-import ProgressCheckbox from "../../progressCheckbox/ProgressCheckbox";
+import ProgressCheckbox from "./progressCheckbox/ProgressCheckbox";
 import CompletionStatus from "../completionstatus/CompletionStatus";
 import styles from './home.module.css';
 
