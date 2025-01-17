@@ -1,45 +1,41 @@
 .progressCheckbox {
+    width: 28px;
+    height: 28px;
     cursor: pointer;
-    transition: all 0.2s ease;
     position: relative;
 }
 
-.progressCheckbox:hover {
-    transform: translate(-1px, -1px);
-    filter: brightness(1.1);
-}
-
-.progressBackground {
+.circle {
     fill: none;
-    stroke: #159a70;
-    transition: all 0.3s ease;
-    opacity: 0.3;
+    stroke: #d3d3d3;
+    stroke-width: 2;
 }
 
-.progressBackground.completed {
-    stroke: #159a70;
-    opacity: 1;
+.progressCircle {
+    fill: none;
+    stroke: #4CAF50;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transform-origin: center;
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.3s ease;
 }
 
-.completedCircle {
-    fill: #159a70;
-    stroke: #159a70;
-    opacity: 0.8;
+.checkmark {
+    fill: none;
+    stroke: #4CAF50;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
 }
 
-.progressFill {
-    fill: #159a70;
-    opacity: 0.3;
-    transition: all 0.3s ease;
-}
-
-.progressCount {
-    fill: #333;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    user-select: none;
-}
-
-.progressCount.completed {
-    fill: #fff;
+.progressText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: #333;
+    pointer-events: none;
 } 

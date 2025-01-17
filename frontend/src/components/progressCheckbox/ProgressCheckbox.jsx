@@ -1,48 +1,50 @@
 import React from 'react';
 import styles from './progressCheckbox.module.css';
 
-export default function ProgressCheckbox({ progress, showCheck, count, onClick, size = 24 }) {
+const ProgressCheckbox = ({ progress, showCheck, count = null, onClick }) => {
+    const radius = 13;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (progress / 100) * circumference;
+
     return (
-        <div 
-            className={styles.progressCheckbox}
-            onClick={onClick}
-            style={{ width: size, height: size }}
-        >
-            <svg width={size} height={size} viewBox="0 0 24 24">
-                {/* Background circle */}
+        <div className={styles.progressCheckbox} onClick={onClick} style={{ width: 28, height: 28 }}>
+            <svg width={28} height={28} viewBox="0 0 28 28">
                 <circle
-                    className={`${styles.progressBackground} ${showCheck ? styles.completed : ''}`}
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    strokeWidth="2"
+                    className={styles.circle}
+                    cx="14"
+                    cy="14"
+                    r={radius}
                 />
-                
-                {/* Progress circle */}
-                {!showCheck && (
-                    <circle
-                        className={styles.progressCircle}
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        strokeWidth="2"
-                        strokeDasharray={`${progress * 62.8 / 100} 62.8`}
-                        transform="rotate(-90 12 12)"
-                    />
-                )}
-                
-                {/* Checkmark */}
-                {showCheck && (
+                <circle
+                    className={styles.progressCircle}
+                    cx="14"
+                    cy="14"
+                    r={radius}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                />
+
+                {showCheck && 
                     <path
-                        className={styles.checkmark}
-                        d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"
+                        className={`${styles.checkmark}`}
+                        d="M8 14l4 4 8-8"
                     />
-                )}
+                }
+
+                {!showCheck && 
+                    <text
+                        className={styles.progressText}
+                        x="28"
+                        y="28"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                    >
+                        {count === -1 ? Math.round(progress) + '%' : count === 0 ? '' : count}
+                    </text>
+                } 
             </svg>
-            
-            {!showCheck && count > 0 && (
-                <div className={styles.count}>{count}</div>
-            )}
         </div>
     );
-} 
+};
+
+export default ProgressCheckbox; 

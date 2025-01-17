@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './completionstatus.module.css';
-import { getMonthNames } from '../../../utils/dateHelpers';
+import { getWeekStart, getWeekEnd } from '../../../utils/progressCalculator';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -25,6 +25,9 @@ ChartJS.register(
   BarElement
 );
 
+const weekStart = getWeekStart();
+const weekEnd = getWeekEnd();
+
 export default function CompletionStatus({ habit, day, onClose }) {
   const [currentDay, setCurrentDay] = useState(new Date(day));
   const [completions, setCompletions] = useState([]);
@@ -39,7 +42,15 @@ export default function CompletionStatus({ habit, day, onClose }) {
         }
         const data = await response.json();
         setCompletions(data);
-        setCompletionsToday(data.filter(completion => completion.date.split('T')[0] === currentDay.toISOString().split('T')[0]));
+        if (day === 'This Week') {
+          setCompletionsToday(data.filter(completion => 
+            completion.date.split('T')[0] >= weekStart.toISOString().split('T')[0] && 
+            completion.date.split('T')[0] <= weekEnd.toISOString().split('T')[0])
+          );
+
+        } else {
+          setCompletionsToday(data.filter(completion => completion.date.split('T')[0] === currentDay.toISOString().split('T')[0]));
+        }
       } catch (error) {
         console.error('Error fetching completions:', error);
       }
@@ -81,7 +92,7 @@ export default function CompletionStatus({ habit, day, onClose }) {
       .join(':');
   };
 
-  const getChartData = () => {
+  const getDailyChartData = () => {
     const hourlyData = {};
 
     completionsToday.forEach(completion => {
@@ -110,12 +121,35 @@ export default function CompletionStatus({ habit, day, onClose }) {
     };
   };
 
+  const getWeeklyChartData = () => {
+    const dailyData = {};
+
+    completionsToday.forEach(completion => {
+      const date = new Date(completion.date);
+      const day = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      if (!dailyData[day]) {
+        dailyData[day] = 0;
+      }
+      dailyData[day] += completion.timeSpend / 60;
+    }); 
+
+    const labels = Object.keys(dailyData);
+    const data = Object.values(dailyData);
+
+    return {
+      labels,
+      datasets: [{ 
+        data, 
+        backgroundColor: 'rgba(255,0,0,0.4)', 
+        borderColor: 'rgba(255,182,193,1)' }],
+    };
+  }
+
   const chartOptions = {
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Time',
         },
       },
       y: {
@@ -135,19 +169,26 @@ export default function CompletionStatus({ habit, day, onClose }) {
   return (
     <div className={styles.statusOverlay} onClick={(e) => { if (e.target.className === styles.statusOverlay) onClose();}}>
       <div className={styles.status}>
-        <div className={styles.header}>
-          <button onClick={handlePreviousDay}>
-            <i className="fa-solid fa-left-long"></i>
-          </button>
-          <h2>{currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h2>
-          <button onClick={handleNextDay}>
-            <i className="fa-solid fa-right-long"></i>
-          </button>
-        </div>
+        
+          {day !== 'This Week' ?
+            <div className={styles.header1}>
+              <button onClick={handlePreviousDay}>
+                <i className="fa-solid fa-left-long"></i>
+              </button>
+              <h2>{currentDay.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h2>
+              <button onClick={handleNextDay}>
+                <i className="fa-solid fa-right-long"></i>
+              </button>
+            </div>
+          :
+          <div className={styles.header2}>
+            <h2> This Week <span>{weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span> </h2>
+          </div>
+          }
 
         <div className={styles.goalSection}>
             <p>My goal is to {habit.habitName} {habit.target.amount} {habit.target.unit} every {habit.frequency}</p>
-            {habit.target.timeIfUnitIsTime.timeAmount && <p>and {habit.target.timeIfUnitIsTime.timeAmount} {habit.target.timeIfUnitIsTime.timeUnit}</p>}
+            {habit.target.unit === "times" && habit.target.timeIfUnitIsTime.timeAmount && <p>and {habit.target.timeIfUnitIsTime.timeAmount} {habit.target.timeIfUnitIsTime.timeUnit}</p>}
         </div>
 
         <div className={styles.body}>
@@ -162,9 +203,12 @@ export default function CompletionStatus({ habit, day, onClose }) {
             </div>
           </div>
           <div className={styles.chart}>
-            <Bar data={getChartData()} options={chartOptions} />
+            {day !== 'This Week' ?
+              <Bar data={getDailyChartData()} options={chartOptions} />
+            :
+              <Bar data={getWeeklyChartData()} options={chartOptions} />
+            }
           </div>
-
         </div>
       </div>
     </div>

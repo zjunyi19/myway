@@ -1,4 +1,4 @@
-import "./createhabit.css";
+import styles from "./createhabit.module.css";
 import { useState } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 
@@ -73,18 +73,18 @@ export default function CreateHabit({ onCreateHabitClose }) {
   };
 
   const handleOverlayClick = (e) => {
-    if (e.target.className === 'createHabitOverlay') {
+    if (e.target.className === styles.createHabitOverlay) {
       onCreateHabitClose();
     }
   };
 
   return (
-    <div className="createHabitOverlay" onClick={handleOverlayClick}>
-      <div className="createHabit">
-        <div className="createHabbitTitle">What's your next goal?</div>
-        <button className="createHabitButton" onClick={onCreateHabitClose}>Back</button>
+    <div className={styles.createHabitOverlay} onClick={handleOverlayClick}>
+      <div className={styles.createHabit}>
+        <div className={styles.createHabbitTitle}>What's your next goal?</div>
+        <button className={styles.createHabitButton} onClick={onCreateHabitClose}>Back</button>
         <button 
-          className="createHabitButton" 
+          className={styles.createHabitButton} 
           type="submit"
           form="habitForm"
         >
@@ -93,14 +93,14 @@ export default function CreateHabit({ onCreateHabitClose }) {
         
         <form 
           id="habitForm"
-          className="createHabitForm" 
+          className={styles.createHabitForm} 
           onSubmit={handleSubmit}
         >
-          <div className="createHabitInputGroup">
+          <div className={styles.createHabitInputGroup}>
             <label>I want to</label>
             <input 
               type="text" 
-              className="createHabitInput" 
+              className={styles.createHabitInput} 
               placeholder="read a book"
               value={habitName}
               onChange={(e) => setHabitName(e.target.value)}
@@ -108,10 +108,10 @@ export default function CreateHabit({ onCreateHabitClose }) {
             />
           </div>
 
-          <div className="createHabitInputGroup">
+          <div className={styles.createHabitInputGroup}>
             <input
               type="number"
-              className="createHabitInput short"
+              className={styles.createHabitInput}
               placeholder="enter number"
               value={targetAmount}
               onChange={(e) => setTargetAmount(e.target.value)}
@@ -119,7 +119,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
             />
 
             <select
-              className="createHabitSelect"
+              className={styles.createHabitSelect}
               value={targetUnit}
               onChange={(e) => setTargetUnit(e.target.value)}
             >
@@ -131,7 +131,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
       
             <label>every</label>
             <select 
-              className="createHabitSelect"
+              className={styles.createHabitSelect}
               value={frequency}
               onChange={(e) => setFrequency(e.target.value)}
             >
@@ -140,18 +140,18 @@ export default function CreateHabit({ onCreateHabitClose }) {
             </select>
 
             {targetUnit === "times" && (
-              <div className="createHabitInputGroup">
+              <div className={styles.createHabitInputGroup}>
                 <label>for</label>
                 <input
                   type="number"
-                  className="createHabitInput"
+                  className={styles.createHabitInput}
                   placeholder="enter number (optional)"
                   value={timeAmount}
                   onChange={(e) => setTimeAmount(e.target.value)}
                   min="1"
                 />
                 <select
-                  className="createHabitSelect"
+                  className={styles.createHabitSelect}
                   value={timeUnit}
                   onChange={(e) => setTimeUnit(e.target.value)}
                 >
@@ -159,7 +159,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
                   <option value="hours">hours</option>
                 </select>
                 <select
-                  className="createHabitSelect wide"
+                  className={styles.createHabitSelect}
                   value={timeType}
                   onChange={(e) => setTimeType(e.target.value)}
                 >
@@ -170,15 +170,15 @@ export default function CreateHabit({ onCreateHabitClose }) {
             )}
           </div>
 
-          <div className="formDivider"></div>
+          <div className={styles.formDivider}></div>
 
-          <div className="createHabitInputGroup">
-            <div className="dateGroup">
+          <div className={styles.createHabitInputGroup}>
+            <div className={styles.dateGroup}>
               <div>
                 <label>Start Date</label>
                 <input
                   type="date"
-                  className="createHabitInput"
+                  className={styles.createHabitInput}
                   value={startDate}
                   min={getTodayString()}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -188,7 +188,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
                 <label>End Date (Optional)</label>
                 <input
                   type="date"
-                  className="createHabitInput"
+                  className={styles.createHabitInput}
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   min={startDate}
@@ -197,7 +197,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
             </div>
           </div>
 
-          {error && <div className="error">{error}</div>}
+          {error && <div className={styles.error}>{error}</div>}
         </form>
       </div>
     </div>

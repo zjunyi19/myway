@@ -72,7 +72,17 @@ export default function Home() {
         };
 
         fetchHabitsAndCompletions();
-    }, [user]);
+    }, [user, showCreateHabit]);
+
+    useEffect(() => {
+        if (completions.length > 0) {
+            const filtered = completions.filter(c => {
+                const date = new Date(c.date);
+                return date >= weekStart && date <= weekEnd;
+            });
+            setCompletionsThisWeek(filtered);
+        }
+    }, [completions, timerHabit]);
 
     const handleCreateHabitClose = () => { setShowCreateHabit(false); };
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };
@@ -207,20 +217,21 @@ export default function Home() {
                                         {weekDays.map((day, index) => {
                                             
                                             if (day === 'This Week') {
-                                                const weekProgress = calculateWeekProgress(habit, completionsThisWeek[habit._id]);
-                                                const weekCount = completionsThisWeek[habit._id]?.length || 0;
+                                                const weekProgress = calculateWeekProgress(
+                                                    habit, 
+                                                    completionsThisWeek.filter(c => c.habitId === habit._id)
+                                                );
 
                                                 return (
                                                     <div key={`${habit._id}-${day}`} className={styles.checkboxCell}>
                                                         <ProgressCheckbox
-                                                            progress={weekProgress}
+                                                            progress={Math.round(weekProgress)}
                                                             showCheck={weekProgress >= 100}
-                                                            count={weekCount}
+                                                            count = {-1}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleCompletionStatusOpen(habit, 'This Week');
                                                             }}
-                                                            size={28}
                                                         />
                                                     </div>
                                                 );
@@ -228,20 +239,21 @@ export default function Home() {
 
                                             const date = new Date();
                                             date.setDate(date.getDate() - date.getDay() + index + 1);
-                                            const dayProgress = calculateDayProgress(habit, completionsThisWeek[habit._id], date); 
-                                            const dayCount = completionsThisWeek[habit._id]?.length || 0;
+                                            const dayProgress = calculateDayProgress(
+                                                habit, 
+                                                completionsThisWeek.filter(c => c.habitId === habit._id && c.date.split('T')[0] === date.toISOString().split('T')[0])
+                                            ); 
                                         
                                             return (
                                                 <div key={`${habit._id}-${day}`} className={styles.checkboxCell}>
                                                     <ProgressCheckbox
-                                                        progress={dayProgress}
-                                                        showCheck={dayProgress >= 100}
-                                                        count={dayCount}
+                                                        progress={Math.round(dayProgress.progress)}
+                                                        showCheck={dayProgress.progress >= 100}
+                                                        count={dayProgress.count}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleCompletionStatusOpen(habit, date);
                                                         }}
-                                                        size={28}
                                                     />
                                                 </div>
                                             );
