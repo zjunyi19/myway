@@ -2,7 +2,7 @@ import styles from "./topbar.module.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function Topbar({ onAddClick, onSettingsClick }) {
+export default function Topbar({ onAddClick, onSettingsClick, onFriendsClick }) {
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth();
 
@@ -18,6 +18,9 @@ export default function Topbar({ onAddClick, onSettingsClick }) {
           onClick={() => userLoggedIn ? onSettingsClick() : navigate('/login')}
         >
           <i className="fa-solid fa-circle-user"></i>
+        </button>
+        <button className={styles.friendsButton} onClick={onFriendsClick}>
+          <i className="fa-solid fa-user-friends"></i>
         </button>
       </div>
     </div>

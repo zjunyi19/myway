@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getWeekStart, getWeekEnd } from '../../../utils/progressCalculator';
 import Topbar from "../../topbar/Topbar";
 import CreateHabit from "../habits/createHabit/CreateHabit";
+import FriendsMain from "../friends/FriendsmMain";
 import UserInfo from "../settings/userinfo/UserInfo";
 import EmptyHabitList from "../emptyhabitlist/EmptyHabitList";
 import EmptyUser from "../emptyuser/EmptyUser";
@@ -18,6 +19,7 @@ export default function Home() {
     const { user } = useAuth();
     const [showCreateHabit, setShowCreateHabit] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+    const [showFriends, setShowFriends] = useState(false);
     const [habits, setHabits] = useState([]);
     const [statusHabit, setStatusHabit] = useState(null);
     const [completions, setCompletions] = useState([]);
@@ -81,6 +83,8 @@ export default function Home() {
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };
     const handleSettingsOpen = () => { setShowSettings(true); };
     const handleSettingsClose = () => { setShowSettings(false); };
+    const handleFriendsOpen = () => { setShowFriends(true); };
+    const handleFriendsClose = () => { setShowFriends(false); };
     const handleHabitClick = (habitId, e) => { 
         if (!isTimerRunning && !e.target.closest('.checkboxCell')) {
             setSelectedHabitId(habitId);
@@ -161,7 +165,7 @@ export default function Home() {
 
     return (
         <div className={styles.homepage}>
-            <Topbar onAddClick={handleCreateHabitOpen} onSettingsClick={handleSettingsOpen} />
+            <Topbar onAddClick={handleCreateHabitOpen} onSettingsClick={handleSettingsOpen} onFriendsClick={handleFriendsOpen} />
             <div className={styles.contentContainer}>
                 {user ? (
                     <>
@@ -261,6 +265,7 @@ export default function Home() {
                 )}
             </div>
 
+            {showFriends && <FriendsMain onFriendsClose={handleFriendsClose} />}
             {showCreateHabit && <CreateHabit onCreateHabitClose={handleCreateHabitClose} onCreateHabitSubmit={fetchHabits}/>}
             {statusHabit && <CompletionStatus 
                 habit={statusHabit} 
