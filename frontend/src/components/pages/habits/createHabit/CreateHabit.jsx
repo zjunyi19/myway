@@ -7,7 +7,7 @@ const getTodayString = () => {
   return today.toISOString().split('T')[0];
 };
 
-export default function CreateHabit({ onCreateHabitClose }) {
+export default function CreateHabit({ onCreateHabitClose, onCreateHabitSubmit }) {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [habitName, setHabitName] = useState("");
@@ -50,22 +50,15 @@ export default function CreateHabit({ onCreateHabitClose }) {
     };
 
     try {
-      const response = await fetch('http://localhost:5001/api/habits/createHabit', {
+      await fetch('http://localhost:5001/api/habits/createHabit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(habitData)
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to create habit');
-        
-      } else {
-        onCreateHabitClose();
-
-      }
+      onCreateHabitClose();
+      onCreateHabitSubmit();
     } catch (error) {
       setError(error.message);
     }
@@ -81,7 +74,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
   return (
     <div className={styles.createHabitOverlay} onClick={handleOverlayClick}>
       <div className={styles.createHabit}>
-        <div className={styles.createHabbitTitle}>What's your next goal?</div>
+        <div className={styles.createHabbitTitle}>Create a new habit</div>
         <button className={styles.createHabitButton} onClick={onCreateHabitClose}>Back</button>
         <button 
           className={styles.createHabitButton} 
@@ -111,7 +104,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
           <div className={styles.createHabitInputGroup}>
             <input
               type="number"
-              className={styles.createHabitInput}
+              className={styles.createHabitInputNumber}
               placeholder="enter number"
               value={targetAmount}
               onChange={(e) => setTargetAmount(e.target.value)}
@@ -144,7 +137,7 @@ export default function CreateHabit({ onCreateHabitClose }) {
                 <label>for</label>
                 <input
                   type="number"
-                  className={styles.createHabitInput}
+                  className={styles.createHabitInputNumber}
                   placeholder="enter number (optional)"
                   value={timeAmount}
                   onChange={(e) => setTimeAmount(e.target.value)}

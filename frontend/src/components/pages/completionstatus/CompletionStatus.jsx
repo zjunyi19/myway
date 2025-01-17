@@ -4,25 +4,21 @@ import { getWeekStart, getWeekEnd } from '../../../utils/progressCalculator';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  LineElement,
-  PointElement,
-  LinearScale,
   CategoryScale,
+  LinearScale,
+  BarElement,
   Title,
   Tooltip,
-  Legend,
-  BarElement
+  Legend
 } from 'chart.js';
 
 ChartJS.register(
-  LineElement,
-  PointElement,
-  LinearScale,
   CategoryScale,
+  LinearScale,
+  BarElement,
   Title,
   Tooltip,
-  Legend,
-  BarElement
+  Legend
 );
 
 const weekStart = getWeekStart();
@@ -30,6 +26,7 @@ const weekEnd = getWeekEnd();
 
 export default function CompletionStatus({ habit, day, onClose }) {
   const [currentDay, setCurrentDay] = useState(new Date(day));
+  const [showChart, setShowChart] = useState(false);
   const [completions, setCompletions] = useState([]);
   const [completionsToday, setCompletionsToday] = useState([]);
 
@@ -111,11 +108,10 @@ export default function CompletionStatus({ habit, day, onClose }) {
       labels,
       datasets: [
         {
-          label: 'Time Spent (Minutes)',
           data,
-          fill: false,
           backgroundColor: 'rgba(255,0,0,0.4)',
           borderColor: 'rgba(255,182,193,1)',
+          borderWidth: 1,
         },
       ],
     };
@@ -141,18 +137,18 @@ export default function CompletionStatus({ habit, day, onClose }) {
       datasets: [{ 
         data, 
         backgroundColor: 'rgba(255,0,0,0.4)', 
-        borderColor: 'rgba(255,182,193,1)' }],
+        borderColor: 'rgba(255,182,193,1)',
+        borderWidth: 1,
+      }],
     };
   }
 
   const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
-      x: {
-        title: {
-          display: true,
-        },
-      },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
           text: 'Minutes',
@@ -164,6 +160,20 @@ export default function CompletionStatus({ habit, day, onClose }) {
         display: false,
       },
     },
+  };
+
+  const handleDelete = async (completionId) => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/completions/delete/${completionId}`, {
+        method: 'DELETE'
+      });
+      
+      // 更新本地状态
+      setCompletions(completions.filter(c => c._id !== completionId));
+      setCompletionsToday(completionsToday.filter(c => c._id !== completionId));
+    } catch (error) {
+      console.error('Error deleting completion:', error);
+    }
   };
 
   return (
@@ -193,22 +203,52 @@ export default function CompletionStatus({ habit, day, onClose }) {
 
         <div className={styles.body}>
           <div className={styles.circles}>
-            <div className={styles.circle}>
+            <div className={styles.circle} onClick={() => setShowChart(false)}>
               <span>{completionsToday.length}</span>
               <p>Completions</p>
             </div>
-            <div className={styles.circle}>
+            <div className={styles.circle} onClick={() => setShowChart(true)}>
               <span>{formatDuration(completionsToday.reduce((sum, completion) => sum + completion.timeSpend, 0))}</span>
               <p>Duration</p>
             </div>
           </div>
-          <div className={styles.chart}>
-            {day !== 'This Week' ?
-              <Bar data={getDailyChartData()} options={chartOptions} />
+          {!showChart ? 
+            <div className={styles.table}>
+              <h3>Completion Details</h3>
+              <table> 
+                <thead>
+                  <tr>
+                    {day === 'This Week' && <th className={styles.noHover}>Date</th>}
+                    <th className={styles.noHover}>Time</th>
+                    <th className={styles.noHover}>Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {completionsToday.map(completion => (
+                    <tr key={completion._id}>
+                      {day === 'This Week' && <td>{completion.date.split('T')[0]}</td>}
+                      <td>{completion.date.split('T')[1].slice(0, 5)}</td>
+                      <td>{formatDuration(completion.timeSpend)}</td>
+                      <button 
+                        className={styles.deleteButton}
+                        onClick={() => handleDelete(completion._id)}
+                      >
+                        <i className="fa-solid fa-minus"></i>
+                      </button>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div> 
             :
-              <Bar data={getWeeklyChartData()} options={chartOptions} />
-            }
-          </div>
+            <div className={styles.chart}>
+              {day !== 'This Week' ?
+                <Bar data={getDailyChartData()} options={chartOptions} />
+              :
+                <Bar data={getWeeklyChartData()} options={chartOptions} />
+              }
+            </div>
+          }
         </div>
       </div>
     </div>

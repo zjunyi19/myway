@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './timerBottomBar.module.css';
 
 
-export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
+export default function TimerBottomBar({ habit, onTimerClose, onTimerStart, onTimerUpdate }) {
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [timerState, setTimerState] = useState('ready'); // ready, running, paused, stopped
@@ -28,7 +28,7 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
         if (timerState === 'ready' || timerState === 'paused') {
             setIsRunning(true);
             setTimerState('running');
-            onStart(); // 通知父组件计时器已启动
+            onTimerStart();
         } else if (timerState === 'running') {
             setIsRunning(false);
             setTimerState('paused');
@@ -42,31 +42,23 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
         try {
             const completion = {
                 habitId: habit._id,
-                userId: habit.firebaseUid,
+                firebaseUid: habit.firebaseUid,
                 date: new Date().toISOString(),
                 duration: time
             };
-            const response = await fetch('http://localhost:5001/api/completions/create', {
+            await fetch('http://localhost:5001/api/completions/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(completion)
             });
-
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to save completion');
-            }
-
             // 重置并关闭计时器
             setTime(0);
-            onStop(); // 通知父组件计时器已停止
-            onClose();
+            onTimerClose();
+            onTimerUpdate();
         } catch (error) {
             console.error('Error saving completion:', error);
-            // 这里可以添加错误提示
             alert('Failed to save your progress. Please try again.');
         }
     };
@@ -76,7 +68,7 @@ export default function TimerBottomBar({ habit, onClose, onStart, onStop }) {
             <div className={styles.timerContent}>
                 <button 
                     className={`${styles.backButton} ${isRunning ? styles.disabled : ''}`}
-                    onClick={!isRunning ? onClose : undefined}
+                    onClick={!isRunning ? onTimerClose : undefined}
                     disabled={isRunning}
                 >
                     <i className="fa-solid fa-xmark"></i>

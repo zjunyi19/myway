@@ -8,36 +8,32 @@ export default function SingleHabit({ habitId, onHabitClose, onHabitUpdate }) {
   const [error, setError] = useState("");
   const [editedHabit, setEditedHabit] = useState(null);
 
-  // 获取习惯数据
-  useEffect(() => {
-    const fetchHabit = async () => {
-      try {
-        const response = await fetch(`http://localhost:5001/api/habits/byid/${habitId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch habit');
+ 
+  const fetchHabit = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/habits/byid/${habitId}`);
+      const data = await response.json();
+      
+      // 处理日期格式
+      const formattedData = {
+        ...data,
+        dates: {
+          start: data.dates.start ? data.dates.start.split('T')[0] : '',
+          end: data.dates.end ? data.dates.end.split('T')[0] : ''
         }
-        const data = await response.json();
-        
-        // 处理日期格式
-        const formattedData = {
-          ...data,
-          dates: {
-            start: data.dates.start ? data.dates.start.split('T')[0] : '',
-            end: data.dates.end ? data.dates.end.split('T')[0] : ''
-          }
-        };
-        
-        setHabit(formattedData);
-        setEditedHabit(formattedData);
-      } catch (error) {
-        setError("Failed to load habit details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      };
+      
+      setHabit(formattedData);
+      setEditedHabit(formattedData);
+    } catch (error) {
+      setError("Failed to load habit details");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchHabit();
-  }, [habitId]);
+  // 获取习惯数据
+  useEffect(() => { fetchHabit(); }, [habitId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

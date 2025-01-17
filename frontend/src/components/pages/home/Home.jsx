@@ -20,8 +20,8 @@ export default function Home() {
     const [showSettings, setShowSettings] = useState(false);
     const [habits, setHabits] = useState([]);
     const [statusHabit, setStatusHabit] = useState(null);
-    const [completions, setCompletions] = useState({});
-    const [completionsThisWeek, setCompletionsThisWeek] = useState({});
+    const [completions, setCompletions] = useState([]);
+    const [completionsThisWeek, setCompletionsThisWeek] = useState([]);
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [selectedHabitId, setSelectedHabitId] = useState(null);
@@ -31,58 +31,51 @@ export default function Home() {
     const weekStart = getWeekStart();
     const weekEnd = getWeekEnd();
 
-
-
-    useEffect(() => {
-        if (!user) {
-            setIsLoading(false);
-            return;
-        }
-
-        const fetchHabitsAndCompletions = async () => {
-            try {
-                setIsLoading(true);
-                const habitsResponse = await fetch(`http://localhost:5001/api/habits/byuser/${user.uid}`);
-                
-                if (!habitsResponse.ok) {
-                    throw new Error('Failed to fetch habits');
-                }
-                
-                const habitsData = await habitsResponse.json();
-                setHabits(habitsData);
-
-                // 获取每个习惯的完成记录
-                const completionsResponse = await fetch(`http://localhost:5001/api/completions/byuser/${user.uid}`);
-                if (!completionsResponse.ok) {
-                    throw new Error('Failed to fetch completions');
-                }
-                const completionsData = await completionsResponse.json();
-
-                setCompletions(completionsData);
-                setCompletionsThisWeek(completionsData.filter(c => {
-                    const date = new Date(c.date);
-                    return date >= weekStart && date <= weekEnd;
-                }));
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setError("Failed to load data");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchHabitsAndCompletions();
-    }, [user, showCreateHabit]);
-
-    useEffect(() => {
-        if (completions.length > 0) {
-            const filtered = completions.filter(c => {
+    const fetchCompletions = async () => {
+        try {
+            setIsLoading(true);
+            // 获取每个习惯的完成记录
+            const completionsResponse = await fetch(`http://localhost:5001/api/completions/byuser/${user.uid}`);
+            const completionsData = await completionsResponse.json();      
+            setCompletions(completionsData);
+            const weeklyCompletions = completionsData.filter(c => {
                 const date = new Date(c.date);
                 return date >= weekStart && date <= weekEnd;
             });
-            setCompletionsThisWeek(filtered);
+            setCompletionsThisWeek(weeklyCompletions);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError("Failed to load data");
+        } finally {
+            setIsLoading(false);
         }
-    }, [completions, timerHabit]);
+    };
+
+    const fetchHabits = async () => {
+        try {
+            setIsLoading(true);
+            const habitsResponse = await fetch(`http://localhost:5001/api/habits/byuser/${user.uid}`);
+            const habitsData = await habitsResponse.json();
+            setHabits(habitsData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError("Failed to load data");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            fetchHabits();
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user) {
+            fetchCompletions();
+        }
+    }, [user]);
 
     const handleCreateHabitClose = () => { setShowCreateHabit(false); };
     const handleCreateHabitOpen = () => { setShowCreateHabit(true); };
@@ -116,7 +109,7 @@ export default function Home() {
     };
 
     const handleTimerStart = () => { setIsTimerRunning(true); };
-    const handleTimerStop = () => { setIsTimerRunning(false); };
+    const handleTimerUpdate = () => { fetchCompletions(); };
 
     const handleHabitUpdate = async (habitId, updatedData) => {
         try {
@@ -268,7 +261,7 @@ export default function Home() {
                 )}
             </div>
 
-            {showCreateHabit && <CreateHabit onCreateHabitClose={handleCreateHabitClose} />}
+            {showCreateHabit && <CreateHabit onCreateHabitClose={handleCreateHabitClose} onCreateHabitSubmit={fetchHabits}/>}
             {statusHabit && <CompletionStatus 
                 habit={statusHabit} 
                 day={statusDay} 
@@ -285,9 +278,9 @@ export default function Home() {
             {timerHabit && (
                 <TimerBottomBar
                     habit={timerHabit}
-                    onClose={handleTimerClose}
-                    onStart={handleTimerStart}
-                    onStop={handleTimerStop}
+                    onTimerClose={handleTimerClose}
+                    onTimerStart={handleTimerStart}
+                    onTimerUpdate={handleTimerUpdate}
                 />
             )}
         </div>

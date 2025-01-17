@@ -61,18 +61,26 @@
   color: #000;
   font-family: 'Poppins', sans-serif;
   height: 60px;
+  min-width: 150px;
+}
+
+.createHabitInputNumber {
+  flex: 1;
+  padding: 15px;
+  background-color: white;
+  border: 2px solid #000;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  color: #000;
+  font-family: 'Poppins', sans-serif;
+  height: 60px;
+  min-width: 150px;
 }
 
 .createHabitInput:focus {
   outline: none;
   border-color: #ff4b4b;
   box-shadow: 5px 5px 0 #000;
-}
-
-.createHabitInput.short {
-  flex: 0 !important;
-  width: 200px !important;
-  min-width: 200px !important;
 }
 
 .createHabitSelect {
@@ -84,7 +92,7 @@
   background: white;
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
-  width: 120px;
+  width: 150px;
   min-width: unset;
   height: 60px;
 }
