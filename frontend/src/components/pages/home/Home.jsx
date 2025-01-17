@@ -270,7 +270,8 @@ export default function Home() {
             {statusHabit && <CompletionStatus 
                 habit={statusHabit} 
                 day={statusDay} 
-                onClose={handleCompletionStatusClose} 
+                onClose={handleCompletionStatusClose}
+                onDelete={fetchCompletions}
             />}
             {showSettings && <UserInfo onSettingsClose={handleSettingsClose} />}
             {selectedHabitId && (

@@ -24,7 +24,7 @@ ChartJS.register(
 const weekStart = getWeekStart();
 const weekEnd = getWeekEnd();
 
-export default function CompletionStatus({ habit, day, onClose }) {
+export default function CompletionStatus({ habit, day, onClose, onDelete }) {
   const [currentDay, setCurrentDay] = useState(new Date(day));
   const [showChart, setShowChart] = useState(false);
   const [completions, setCompletions] = useState([]);
@@ -171,6 +171,7 @@ export default function CompletionStatus({ habit, day, onClose }) {
       // 更新本地状态
       setCompletions(completions.filter(c => c._id !== completionId));
       setCompletionsToday(completionsToday.filter(c => c._id !== completionId));
+      onDelete();
     } catch (error) {
       console.error('Error deleting completion:', error);
     }
