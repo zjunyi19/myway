@@ -16,7 +16,6 @@ router.post('/register', async (req, res) => {
     });
     
     await user.save();
-    console.log('User saved successfully:', user);
     
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -33,7 +32,6 @@ router.post('/register', async (req, res) => {
 router.post('/check-credentials', async (req, res) => {
   try {
     const { username, email } = req.body;
-    console.log('Checking credentials:', { username, email });
     
     // 同时检查用户名和邮箱
     const [usernameExists, emailExists] = await Promise.all([

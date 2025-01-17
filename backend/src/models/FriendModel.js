@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-// Completion Schema
-const completionSchema = new mongoose.Schema({
+// Friend Schema
+const FriendSchema = new mongoose.Schema({
     _id: {
       type: mongoose.Schema.Types.ObjectId,
       auto: true
@@ -17,7 +17,7 @@ const completionSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   timeSpend: {
@@ -25,7 +25,7 @@ const completionSchema = new mongoose.Schema({
     default: 0,
   },
 }, {
-  collection: "Completions"
+  collection: "Friends"
 });
 
-module.exports = mongoose.model('Completions', completionSchema);
+module.exports = mongoose.model('Friends', completionSchema);

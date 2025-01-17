@@ -15,24 +15,36 @@ router.post('/createHabit', async (req, res) => {
         amount: target.amount,
         unit: target.unit,
         timeIfUnitIsTime: target.unit === "times" ? {
-          timeAmount: target.timeIfUnitIsTime?.timeAmount || null,
-          timeUnit: target.timeIfUnitIsTime?.timeUnit || null,
-          timeType: target.timeIfUnitIsTime?.timeType || null
-        } : null
+          timeAmount: target.timeIfUnitIsTime.timeAmount,
+          timeUnit: target.timeIfUnitIsTime.timeUnit,
+          timeType: target.timeIfUnitIsTime.timeType
+        } : {
+          timeAmount: 0,
+          timeUnit: "mins",
+          timeType: "eachtime"
+        }
       },
       dates
     });
 
     await habit.save();
-    
+        
     res.status(201).json({ 
       message: 'Habit created successfully',
       habit 
     });
   } catch (error) {
+    console.error("Error creating habit:", error);
+    console.error("Error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    
     res.status(500).json({ 
       message: 'Error creating habit', 
-      error: error.message 
+      error: error.message,
+      details: error.name
     });
   }
 });

@@ -5,10 +5,10 @@ const Completion = require('../models/CompletionModel');
 // 创建新的完成记录
 router.post('/create', async (req, res) => {
     try {
-        const { habitId, userId, date, duration } = req.body;
+        const { habitId, firebaseUid, date, duration } = req.body;
         const completion = new Completion({
             habitId,
-            userId,
+            firebaseUid,
             date,
             timeSpend: duration,
         });
@@ -33,31 +33,10 @@ router.get('/byhabit/:habitId', async (req, res) => {
 // 获取特定用户所有的完成记录
 router.get('/byuser/:userId', async (req, res) => {
     try {
-        const completions = await Completion.find({ userId: req.params.userId });
+        const completions = await Completion.find({ firebaseUid: req.params.userId });
         res.json(completions);
     } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// 获取特定日期范围内的完成记录
-router.get('/bydate', async (req, res) => {
-    try {
-        const { startDate, endDate, habitId } = req.query;
-        const query = {
-            date: {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate)
-            }
-        };
-        
-        if (habitId) {
-            query.habitId = habitId;
-        }
-
-        const completions = await Completion.find(query);
-        res.json(completions);
-    } catch (error) {
+        console.error("Error fetching completions:", error);
         res.status(500).json({ message: error.message });
     }
 });
