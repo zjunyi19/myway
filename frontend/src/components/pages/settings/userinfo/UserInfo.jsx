@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./userinfo.module.css";
+import { arrayBufferToBase64 } from "../../../../utils/dateHelpers";
 import { useAuth } from '../../../../contexts/AuthContext';
 import { auth } from '../../../../firebase/auth';
 import { doPasswordChange, doSignOut } from "../../../../firebase/auth";
@@ -13,29 +14,17 @@ export default function UserInfo({ onSettingsClose }) {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const fileInputRef = useRef(null);
 
-  // 获取用户数据
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // 确保 user 和 user.uid 存在
-        if (!user?.uid) {
-          console.log('No user UID available');
-          return;
-        }
         const response = await fetch(`http://localhost:5001/api/users/profile/${user.uid}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           }
         });
-        
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Server response:', errorData);
-          throw new Error(`Server responded with ${response.status}: ${errorData}`);
-        }
-        
         const data = await response.json();
         setUserData(data);
       } catch (error) {
@@ -45,12 +34,74 @@ export default function UserInfo({ onSettingsClose }) {
     };
 
     fetchUserData();
-  
   }, [user]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onSettingsClose();
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      setError('Please select a valid image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      setError('File size should be less than 5MB');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      setError('');
+      const response = await fetch(`http://localhost:5001/api/users/upload-avatar/${user.uid}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      
+      // Update the avatar in UI
+      if (data.avatar) {
+        // Convert the array buffer to base64
+        const base64String = btoa(
+          new Uint8Array(data.avatar.data.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ''
+          )
+        );
+        
+        setUserData(prevData => ({
+          ...prevData,
+          avatar: {
+            data: data.avatar.data,
+            contentType: data.avatar.type
+          }
+        }));
+        setMessage('Avatar updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      setError('Failed to upload avatar. Please try again.');
     }
   };
 
@@ -84,8 +135,9 @@ export default function UserInfo({ onSettingsClose }) {
       setNewPassword("");
       setConfirmNewPassword("");
     } catch (error) {
-      setIsUpdatingPassword(false);
       setError("Failed to update password");
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -96,6 +148,30 @@ export default function UserInfo({ onSettingsClose }) {
 
         <h1 className={styles.userInfoTitle}>User Profile</h1>
         
+        <div className={styles.avatarSection}>
+          <div className={styles.avatarContainer} onClick={handleAvatarClick}>
+            {userData?.avatar?.data ? (
+              <img 
+                src={`data:${userData.avatar.contentType};base64,${arrayBufferToBase64(userData.avatar.data.data)}`}
+                alt="Avatar" 
+                className={styles.avatar} 
+              />
+            ) : (
+              <i className="fa-solid fa-circle-user" style={{ fontSize: '5rem', color: '#9c9c9c' }}></i>
+            )}
+            <div className={styles.uploadOverlay}>
+              <i className="fas fa-camera" style={{ color: 'white', fontSize: '1.5rem' }}></i>
+            </div>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+            accept="image/*"
+            className={styles.fileInput}
+          />
+        </div>
+
         <div className={styles.userInfoItem}>
           <label>Username</label>
           <div className={styles.userInfoValue}>{userData?.username}</div>
@@ -113,7 +189,12 @@ export default function UserInfo({ onSettingsClose }) {
           <div className={styles.userInfoValue}>{user?.email}</div>
         </div>
 
-        <form className="passwordChangeForm" onSubmit={handlePasswordChange}>
+        <div className={styles.userInfoItem}>
+          <label>Score</label>
+          <div className={styles.userInfoValue}>{userData?.score}</div>
+        </div>
+
+        <form className={styles.passwordChangeForm} onSubmit={handlePasswordChange}>
           <h2>Change Password</h2>
           <div className={styles.passwordInputContainer}>
             <input
@@ -123,19 +204,24 @@ export default function UserInfo({ onSettingsClose }) {
               onChange={(e) => setNewPassword(e.target.value)}
               className={styles.passwordInput}
             />
-            <input
-              type="password"
-              placeholder="Confirm new password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-              className={styles.passwordInput}
-            />
+            {newPassword && (
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className={styles.passwordInput}
+              />
+            )}
           </div>
-          <button type="submit" className={styles.passwordChangeButton}>Update Password</button>
+          <button 
+            type="submit" 
+            className={styles.passwordChangeButton}
+            disabled={isUpdatingPassword}
+          >
+            {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+          </button>
         </form>
-
-        {error && <span className={styles.error}>{error}</span>}
-        {message && <span className={styles.success}>{message}</span>}
 
         <button 
           className={styles.userLogoutButton} 
@@ -146,6 +232,9 @@ export default function UserInfo({ onSettingsClose }) {
         >
           Logout
         </button>
+        {error && <span className={styles.error}>{error}</span>}
+        {message && <span className={styles.success}>{message}</span>}
+
       </div>
     </div>
   );

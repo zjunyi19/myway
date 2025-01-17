@@ -20,4 +20,7 @@ const friendSchema = new mongoose.Schema({
   collection: "Friends"
 });
 
-module.exports = mongoose.model('Friends', completionSchema);
+// Create compound index for faster friendship lookups
+friendSchema.index({ firebaseUidA: 1, firebaseUidB: 1 }, { unique: true });
+
+module.exports = mongoose.model('Friends', friendSchema);

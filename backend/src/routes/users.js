@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/UserModel');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not an image! Please upload an image.'), false);
+    }
+  }
+});
 
 router.post('/register', async (req, res) => {
   try {
@@ -13,6 +28,8 @@ router.post('/register', async (req, res) => {
       email,
       firstName,
       lastName,
+      avatar: null,
+      score: 0,
     });
     
     await user.save();
@@ -90,5 +107,39 @@ router.post('/check-credentials', async (req, res) => {
     res.status(400).json('Error: ' + error);
   }
 });
+
+router.post('/upload-avatar/:firebaseUid', upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const { firebaseUid } = req.params;
+    const user = await User.findOne({ firebaseUid });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.avatar = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype
+    };
+
+    await user.save();
+
+    // Send back the processed image data
+    res.json({ 
+      message: 'Avatar uploaded successfully',
+      avatar: {
+        data: req.file.buffer,
+        type: req.file.mimetype
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    res.status(500).json({ message: 'Error uploading avatar' });
+  }
+}); 
 
 module.exports = router; 

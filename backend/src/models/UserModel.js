@@ -28,6 +28,14 @@ const UserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  avatar: {
+    data: Buffer,
+    contentType: String
+  },
+  score: {
+    type: Number,
+    default: 0,
+  },
 }, {
   collection: "Users"
 });
