@@ -5,23 +5,13 @@ const User = require('../models/UserModel');
 
 // Add friend
 router.post('/addFriend', async (req, res) => {
-  const { firebaseUidA, firebaseUidB } = req.body;
+  const { firebaseUidA, firebaseUidB, status } = req.body;
   try {
-    // Check if friendship already exists
-    const existingFriendship = await Friend.findOne({
-      $or: [
-        { firebaseUidA, firebaseUidB },
-        { firebaseUidA: firebaseUidB, firebaseUidB: firebaseUidA }
-      ]
-    });
-
-    if (existingFriendship) {
-      return res.status(400).json({ message: 'Friendship already exists' });
-    }
 
     const friend = new Friend({ 
       firebaseUidA, 
       firebaseUidB, 
+      status,
       date: new Date() 
     });
     await friend.save();
@@ -42,7 +32,7 @@ router.post('/check-friendship', async (req, res) => {
         { firebaseUidA: friendUid, firebaseUidB: userUid }
       ]
     });
-    res.json({ isFriend: !!friendship });
+    res.json({ friendship });
   } catch (error) {
     res.status(500).json({ message: 'Error checking friendship status' });
   }
@@ -59,20 +49,22 @@ router.get('/get-friends/:firebaseUid', async (req, res) => {
         { firebaseUidB: firebaseUid }
       ]
     });
+    let pendingIds = friendships.filter(friendship => friendship.status === 'pending' && friendship.firebaseUidB === firebaseUid);
+    let acceptedIds = friendships.filter(friendship => friendship.status === 'accepted');
 
     // Extract friend IDs
-    const friendIds = friendships.map(friendship => 
-      friendship.firebaseUidA === firebaseUid ? 
-        friendship.firebaseUidB : 
-        friendship.firebaseUidA
-    );
+    pendingIds = pendingIds.map(pendingId => pendingId.firebaseUidA);
+    acceptedIds = acceptedIds.map(acceptedId => acceptedId.firebaseUidA === firebaseUid ? acceptedId.firebaseUidB : acceptedId.firebaseUidA);
 
-    // Get friend details from User model
-    const friends = await User.find({
-      firebaseUid: { $in: friendIds }
-    }).select('firebaseUid username avatar score');
+    const pendingFriends = await User.find({
+      firebaseUid: pendingIds }
+    ).select('firebaseUid username avatar score');
 
-    res.json(friends);
+    const acceptedFriends = await User.find({
+      firebaseUid: acceptedIds }
+    ).select('firebaseUid username avatar score');
+
+    res.json({ pending: pendingFriends, accepted: acceptedFriends });
   } catch (error) {
     console.error('Error getting friends:', error);
     res.status(500).json({ message: 'Error getting friends' });
@@ -92,6 +84,31 @@ router.delete('/remove-friend', async (req, res) => {
     res.json({ message: 'Friend removed successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error removing friend' });
+  }
+});
+
+// Update friend status
+router.put('/update-status', async (req, res) => {
+  const { userUid, friendUid, status } = req.body;
+  try {
+    const friendship = await Friend.findOne({
+      $or: [
+        { firebaseUidA: userUid, firebaseUidB: friendUid },
+        { firebaseUidA: friendUid, firebaseUidB: userUid }
+      ]
+    });
+
+    if (!friendship) {
+      return res.status(404).json({ message: 'Friendship not found' });
+    }
+
+    friendship.status = status;
+    await friendship.save();
+
+    res.json({ message: 'Friendship status updated successfully' });
+  } catch (error) {
+    console.error('Error updating friendship status:', error);
+    res.status(500).json({ message: 'Error updating friendship status' });
   }
 });
 

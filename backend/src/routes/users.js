@@ -97,6 +97,15 @@ router.get('/profile/:firebaseUid', async (req, res) => {
   }
 });
 
+router.get('/search/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching for user' });
+  }
+});
+
 // Check user credentials
 router.post('/check-credentials', async (req, res) => {
   try {
@@ -116,10 +125,6 @@ router.post('/upload-avatar/:firebaseUid', upload.single('avatar'), async (req, 
 
     const { firebaseUid } = req.params;
     const user = await User.findOne({ firebaseUid });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
 
     user.avatar = {
       data: req.file.buffer,

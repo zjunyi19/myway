@@ -1,0 +1,132 @@
+.mainContent {
+    padding: 2rem;
+    height: 100%;
+}
+
+.mainContent h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000;
+}
+
+.noFriends {
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+}
+
+.friendSection {
+    margin-bottom: 1rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 0.8rem;
+}
+
+.sectionHeader:hover {
+    background: #e0e0e0;
+}
+
+.sectionHeader h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.friendList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.friendCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem;
+    border: 2px solid #000;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.friendCard:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.friendInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatarContainer {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.username {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.acceptButton,
+.rejectButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.acceptButton {
+    background: #4CAF50;
+    color: white;
+}
+
+.acceptButton:hover {
+    background: #45a049;
+    transform: scale(1.1);
+}
+
+.rejectButton {
+    background: #ff4b4b;
+    color: white;
+}
+
+.rejectButton:hover {
+    background: #ff3333;
+    transform: scale(1.1);
+}

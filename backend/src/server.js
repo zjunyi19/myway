@@ -20,10 +20,12 @@ mongoose.connect(uri)
 const habitsRouter = require('./routes/habits');
 const completionsRouter = require('./routes/completions');
 const usersRouter = require('./routes/users');
+const friendsRouter = require('./routes/friends');
 
 app.use('/api/habits', habitsRouter);
 app.use('/api/completions', completionsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/friends', friendsRouter);
 
 // Start server
 app.listen(port, () => {

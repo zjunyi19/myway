@@ -171,7 +171,7 @@ export default function CompletionStatus({ habit, day, onClose, onDelete }) {
       // 更新本地状态
       setCompletions(completions.filter(c => c._id !== completionId));
       setCompletionsToday(completionsToday.filter(c => c._id !== completionId));
-      onDelete();
+      onDelete()
     } catch (error) {
       console.error('Error deleting completion:', error);
     }

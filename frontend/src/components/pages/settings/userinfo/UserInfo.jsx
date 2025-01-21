@@ -6,7 +6,7 @@ import { auth } from '../../../../firebase/auth';
 import { doPasswordChange, doSignOut } from "../../../../firebase/auth";
 import { validatePassword } from "../../../../utils/passwordHelpers";
 
-export default function UserInfo({ onSettingsClose }) {
+export default function UserInfo({ userid = null, onSettingsClose }) {
   const { user } = useAuth();
   const [userData, setUserData] = useState(null);
   const [newPassword, setNewPassword] = useState("");
@@ -19,7 +19,8 @@ export default function UserInfo({ onSettingsClose }) {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/users/profile/${user.uid}`, {
+        const checkid = userid || user.uid;
+        const response = await fetch(`http://localhost:5001/api/users/profile/${checkid}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -159,17 +160,21 @@ export default function UserInfo({ onSettingsClose }) {
             ) : (
               <i className="fa-solid fa-circle-user" style={{ fontSize: '5rem', color: '#9c9c9c' }}></i>
             )}
-            <div className={styles.uploadOverlay}>
-              <i className="fas fa-camera" style={{ color: 'white', fontSize: '1.5rem' }}></i>
-            </div>
+            {userid === null && (
+              <>
+                <div className={styles.uploadOverlay}>
+                  <i className="fas fa-camera" style={{ color: 'white', fontSize: '1.5rem' }}></i>
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                  className={styles.fileInput}
+                />
+              </>
+            )}
           </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleAvatarChange}
-            accept="image/*"
-            className={styles.fileInput}
-          />
         </div>
 
         <div className={styles.userInfoItem}>
@@ -194,10 +199,12 @@ export default function UserInfo({ onSettingsClose }) {
           <div className={styles.userInfoValue}>{userData?.score}</div>
         </div>
 
-        <form className={styles.passwordChangeForm} onSubmit={handlePasswordChange}>
-          <h2>Change Password</h2>
-          <div className={styles.passwordInputContainer}>
-            <input
+        {userid === null && (
+          <>
+            <form className={styles.passwordChangeForm} onSubmit={handlePasswordChange}>
+              <h2>Change Password</h2>
+              <div className={styles.passwordInputContainer}>
+                <input
               type="password"
               placeholder="New password"
               value={newPassword}
@@ -213,25 +220,27 @@ export default function UserInfo({ onSettingsClose }) {
                 className={styles.passwordInput}
               />
             )}
-          </div>
-          <button 
-            type="submit" 
-            className={styles.passwordChangeButton}
-            disabled={isUpdatingPassword}
-          >
-            {isUpdatingPassword ? 'Updating...' : 'Update Password'}
-          </button>
-        </form>
+            </div>
+            <button 
+              type="submit" 
+              className={styles.passwordChangeButton}
+              disabled={isUpdatingPassword}
+            >
+              {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+            </button>
+          </form>
 
-        <button 
-          className={styles.userLogoutButton} 
-          onClick={() => {
-            doSignOut();
-            onSettingsClose();
-          }}
-        >
-          Logout
-        </button>
+          <button 
+            className={styles.userLogoutButton} 
+            onClick={() => {
+              doSignOut();
+              onSettingsClose();
+            }}
+          >
+            Logout
+            </button>
+          </>
+        )}
         {error && <span className={styles.error}>{error}</span>}
         {message && <span className={styles.success}>{message}</span>}
 

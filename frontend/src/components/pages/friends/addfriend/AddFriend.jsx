@@ -11,7 +11,10 @@ export default function AddFriend() {
   const { user } = useAuth();
 
   const handleSearch = async () => {
-    if (!searchTerm.trim()) return;
+    if (!searchTerm.trim()) {
+        setError('Please enter a username');
+        return;
+    }
     
     setIsLoading(true);
     setError('');
@@ -20,9 +23,9 @@ export default function AddFriend() {
     try {
       // First search for the user
       const response = await fetch(`http://localhost:5001/api/users/search/${searchTerm}`);
-      const data = await response.json();
+      const foundUser = await response.json();
 
-      if (!data.user) {
+      if (!foundUser) {
         setError('User not found');
         return;
       }
@@ -35,25 +38,27 @@ export default function AddFriend() {
         },
         body: JSON.stringify({
           userUid: user.uid,
-          friendUid: data.user.firebaseUid
+          friendUid: foundUser.firebaseUid
         })
       });
 
-      const friendshipData = await friendCheckResponse.json();
-      
+      const friendship = await friendCheckResponse.json();
       setSearchResult({
-        ...data.user,
-        isFriend: friendshipData.isFriend
+        friendInfo: foundUser,
+        friendship: friendship.friendship
       });
     } catch (error) {
       setError('Error searching for user');
     } finally {
       setIsLoading(false);
+      setError('');
     }
   };
 
   const handleAddFriend = async () => {
     if (!searchResult) return;
+    setIsLoading(true);
+    setError('');
 
     try {
       const response = await fetch('http://localhost:5001/api/friends/addFriend', {
@@ -63,20 +68,28 @@ export default function AddFriend() {
         },
         body: JSON.stringify({
           firebaseUidA: user.uid,
-          firebaseUidB: searchResult.firebaseUid
+          firebaseUidB: searchResult.friendInfo.firebaseUid,
+          status: 'pending'
         })
       });
 
       if (response.ok) {
         setSearchResult(prev => ({
           ...prev,
-          isFriend: true
+          friendship: {
+            firebaseUidA: user.uid,
+            firebaseUidB: searchResult.friendInfo.firebaseUid,
+            status: 'pending'
+          }
         }));
       } else {
         setError('Failed to add friend');
       }
     } catch (error) {
       setError('Error adding friend');
+    } finally {
+      setIsLoading(false);
+      setError('');
     }
   };
 
@@ -91,6 +104,7 @@ export default function AddFriend() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}
+          autoFocus
           onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
         />
         <button onClick={handleSearch} className={styles.searchButton}>
@@ -105,9 +119,9 @@ export default function AddFriend() {
         <div className={styles.resultCard}>
           <div className={styles.userInfo}>
             <div className={styles.avatarContainer}>
-              {searchResult.avatar?.data ? (
+              {searchResult.friendInfo.avatar?.data ? (
                 <img
-                  src={`data:${searchResult.avatar.contentType};base64,${arrayBufferToBase64(searchResult.avatar.data.data)}`}
+                  src={`data:${searchResult.friendInfo.avatar.contentType};base64,${arrayBufferToBase64(searchResult.friendInfo.avatar.data.data)}`}
                   alt="Avatar"
                   className={styles.avatar}
                 />
@@ -115,9 +129,9 @@ export default function AddFriend() {
                 <i className="fa-solid fa-circle-user" style={{ fontSize: '2rem', color: '#9c9c9c' }}></i>
               )}
             </div>
-            <span className={styles.username}>{searchResult.username}</span>
+            <span className={styles.username}>{searchResult.friendInfo.username}</span>
           </div>
-          {!searchResult.isFriend ? (
+          {!searchResult.friendship ? (
             <button 
               onClick={handleAddFriend} 
               className={styles.addButton}
@@ -125,8 +139,12 @@ export default function AddFriend() {
             >
               <i className="fas fa-plus"></i>
             </button>
+          ) : searchResult.friendship.status === 'pending' ? (
+            <div className={`${styles.friendIndicator} ${styles.pending}`} title="Pending Approval">
+              <i class="fa-solid fa-clock"></i>
+            </div>
           ) : (
-            <div className={styles.friendIndicator} title="Already Friends">
+            <div className={`${styles.friendIndicator} ${styles.approval}`} title="Already Friends">
               <i className="fas fa-check"></i>
             </div>
           )}
