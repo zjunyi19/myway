@@ -1,0 +1,63 @@
+.rankingContent {
+    padding: 2rem;
+    height: 100%;
+}
+
+.rankingContent h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000;
+}
+
+.rankingTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rankingTable th, .rankingTable td {
+    border: none;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.rankingTable th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+.rankingTable tr:hover {
+    background-color: #f9ecec;
+    cursor: pointer;
+}
+
+.rank {
+    width: 5%; /* Adjusted width for rank column */
+    text-align: center;
+    font-weight: 600;
+}
+
+.avatarContainer {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.username {
+    width: 40%; /* Adjusted width for username column */
+}
+
+.score {
+    width: 30%; /* Adjusted width for score column */
+}

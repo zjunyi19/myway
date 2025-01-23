@@ -188,11 +188,12 @@ export default function UserInfo({ userid = null, onSettingsClose }) {
             {userData ? `${userData.firstName} ${userData.lastName}` : ''}
           </div>
         </div>
-
-        <div className={styles.userInfoItem}>
-          <label>Email</label>
-          <div className={styles.userInfoValue}>{user?.email}</div>
-        </div>
+        {userid === null && (
+          <div className={styles.userInfoItem}>
+            <label>Email</label>
+            <div className={styles.userInfoValue}>{user?.email}</div>
+          </div>
+        )}
 
         <div className={styles.userInfoItem}>
           <label>Score</label>
