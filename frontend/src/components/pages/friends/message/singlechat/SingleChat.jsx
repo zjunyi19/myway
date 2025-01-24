@@ -41,7 +41,9 @@ const SingleChat = ({ friend, onClose }) => {
     const fetchConversation = async () => {
         try {
             const response = await axios.get(`http://localhost:5001/api/messages/conversation/${user.uid}/${friend.firebaseUid}`);
+            console.log(response.data);
             const messages = response.data.map(msg => JSON.parse(msg));
+            console.log("messages", messages);
             messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             setConversation(messages);
         } catch (error) {

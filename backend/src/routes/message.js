@@ -17,15 +17,20 @@ router.post('/update-to-read/:userId/:friendId', async (req, res) => {
 });
 
 router.get('/last-message/:userId/:friendId', async (req, res) => {
-    await redisService.clearAllMessageKeys();
+    //await redisService.clearAllMessageKeys();
     const { userId, friendId } = req.params;
     let message = null;
     let count = null;
     message = await redisService.getLastMessage(friendId, userId);
     count = await redisService.getUnreadMessageCount(friendId, userId);
     if (!message || count === -1) {
-        message = await Message.find({ senderId: friendId, receiverId: userId})
-        count = message.filter(msg => msg.read === false).length;
+        message = await Message.find(
+            { $or: [
+                { senderId: friendId, receiverId: userId },
+                { senderId: userId, receiverId: friendId }
+            ]
+        })
+        count = message.filter(msg => msg.read === false && msg.senderId === friendId).length;
         message = message.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
         await redisService.cacheLastMessage(friendId, userId, message);
         await redisService.cacheUnreadMessageCount(friendId, userId, count);
@@ -45,7 +50,6 @@ router.get('/conversation/:userId/:friendId', async (req, res) => {
         if (cachedMessages.length > 0) {
             return res.json(cachedMessages);
         }
-        
         // If not in cache, get from database
         const messages = await Message.find({
             $or: [
@@ -55,7 +59,6 @@ router.get('/conversation/:userId/:friendId', async (req, res) => {
         }).sort({ timestamp: -1 });
         const messagesSent = messages.filter(msg => msg.senderId === userId);
         const messagesReceived = messages.filter(msg => msg.receiverId === userId);
-
         // Cache the result
         if (messagesSent.length > 0) {
             await redisService.cacheUserLatestMessages(userId, friendId, messagesSent);
@@ -63,7 +66,6 @@ router.get('/conversation/:userId/:friendId', async (req, res) => {
         if (messagesReceived.length > 0) {
             await redisService.cacheUserLatestMessages(friendId, userId, messagesReceived);
         }
-        
         res.json(messages);
     } catch (error) {
         console.error('Error fetching conversation:', error);

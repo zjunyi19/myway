@@ -25,15 +25,23 @@ const redisService = {
     // Cache user's latest messages
     async cacheUserLatestMessages(senderId, receiverId, messages) {
         const key = `${MESSAGE_CACHE_PREFIX}${senderId}:${receiverId}`;
-        await redisClient.sadd(key, ...messages.map(msg => JSON.stringify(msg)));
+        
+        if (Array.isArray(messages)) {
+            // If it's an array of messages
+            const messageStrings = messages.map(msg => JSON.stringify(msg));
+            await redisClient.sadd(key, ...messageStrings);
+        } else {
+            // If it's a single message
+            await redisClient.sadd(key, JSON.stringify(messages));
+        }
+        
         await redisClient.expire(key, CACHE_DURATION);
     },
 
     // Get user's cached latest messages
     async getMessages(senderId, receiverId) {
         const key = `${MESSAGE_CACHE_PREFIX}${senderId}:${receiverId}`;
-        const messages = await redisClient.smembers(key);
-        return messages;
+        return await redisClient.smembers(key);
     },
 
     // 未读消息计数相关方法

@@ -48,9 +48,11 @@ const socketHandler = (io) => {
                 
                 // 如果接收者不在聊天框中，更新未读消息缓存
                 if (!isReceiverInChat) {
-                    await redisService.cacheLastMessage(messageInput.senderId, messageInput.receiverId, message);
                     await redisService.incrementUnreadMessageCount(messageInput.senderId, messageInput.receiverId);
                 }
+                console.log("here")
+                await redisService.cacheLastMessage(messageInput.senderId, messageInput.receiverId, message);
+                await redisService.cacheUserLatestMessages(messageInput.senderId, messageInput.receiverId, message);
                 
                 // 获取接收者的socket id
                 const receiverSocketId = userSocketMap.get(messageInput.receiverId);

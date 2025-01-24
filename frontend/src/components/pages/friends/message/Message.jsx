@@ -17,6 +17,7 @@ const Message = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [needUpdate, setNeedUpdate] = useState(false);
     const [showFriendInfo, setShowFriendInfo] = useState(false);
+    const [showSingleChat, setShowSingleChat] = useState(false);
     const [selectedFriendId, setSelectedFriendId] = useState(null);
 
     const handleFriendInfoOpen = (friendId) => {
@@ -29,16 +30,22 @@ const Message = () => {
         setShowFriendInfo(false);
     };
 
-    const handleClickConversation = async (friend, count) => {
+    const handleSingleChatClose = () => {
+        setSelectedFriend(null);
+        setShowSingleChat(false);
+        setNeedUpdate(needUpdate ? false : true);
+    };
+
+    const handleSingleChatOpen = async (friend, count) => {
         if (count > 0) {
             try {
                 await axios.post(`http://localhost:5001/api/messages/update-to-read/${user.uid}/${friend.firebaseUid}`);
-                setNeedUpdate(needUpdate ? false : true);
             } catch (error) {
                 console.error('Error updating messages to read:', error);
             }
         }
         setSelectedFriend(friend);
+        setShowSingleChat(true);
     };
 
     useEffect(() => {
@@ -48,7 +55,7 @@ const Message = () => {
     useEffect(() => {
         if (socket) {
             socket.on('receive_message', (message) => {
-                handleReceiveMessage(message);
+                handleLatestMessage(message);
             });
 
             return () => {
@@ -57,7 +64,7 @@ const Message = () => {
         }
     }, [socket, friends]);
 
-    const handleReceiveMessage = async (message) => {
+    const handleLatestMessage = async (message) => {
         // 如果消息是发给当前用户的
         if (message.receiverId === user.uid) {
             setFriends(prevFriends => {
@@ -86,6 +93,19 @@ const Message = () => {
                     return 0;
                 });
             });
+        }
+    };
+
+    const fetchFriends = async () => {
+        setIsLoading(true);
+        try {
+            const friendsResponse = await axios.get(`http://localhost:5001/api/friends/get-friends/${user.uid}`);
+            const friendsList = friendsResponse.data.accepted || [];
+            setFriends(friendsList);
+        } catch (error) {
+            console.error('Error fetching friends:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -169,7 +189,7 @@ const Message = () => {
                             <div
                                 key={friend.firebaseUid}
                             className={`${styles.messagePreview} ${unreadCount > 0 ? styles.unread : ''}`}
-                            onClick={() => handleClickConversation(friend, unreadCount)}
+                            onClick={() => handleSingleChatOpen(friend, unreadCount)}
                         >
                             <div className={styles.friendInfo}>
                                 {friend.avatar ? (
@@ -215,10 +235,10 @@ const Message = () => {
                 )}
             </div>
 
-            {selectedFriend && (
+            {showSingleChat && (
                 <SingleChat
                     friend={selectedFriend}
-                    onClose={() => setSelectedFriend(null)}
+                    onClose={handleSingleChatClose}
                 />
             )}
             {showFriendInfo && <UserInfo userid={selectedFriendId} onSettingsClose={handleFriendInfoClose} />}
