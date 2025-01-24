@@ -1,5 +1,10 @@
 const Message = require('../models/MessageModel');
 const redisService = require('../services/redisService');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+
+const privateKey = fs.readFileSync(path.join(__dirname, '../../keys/private.pem'), 'utf8');
 
 const socketHandler = (io) => {
     // 存储用户ID和socket.id的映射
@@ -36,13 +41,25 @@ const socketHandler = (io) => {
             try {
                 const isReceiverInChat = userCurrentChat.get(messageInput.receiverId) === messageInput.senderId;
                 
+                let content = messageInput.content;
+                // 如果消息是加密的，先解密
+                if (messageInput.encrypted) {
+                    content = crypto.privateDecrypt(
+                        {
+                            key: privateKey,
+                            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                        },
+                        Buffer.from(messageInput.content, 'base64')
+                    ).toString();
+                }
+
                 // 保存消息到数据库
                 const message = new Message({
                     senderId: messageInput.senderId,
                     receiverId: messageInput.receiverId,
-                    content: messageInput.content,
+                    content: content,
                     timestamp: messageInput.timestamp,
-                    read: isReceiverInChat // 如果接收者正在查看这个聊天，则标记为已读
+                    read: isReceiverInChat
                 });
                 await message.save();
                 

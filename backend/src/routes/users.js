@@ -16,6 +16,8 @@ const upload = multer({
     }
   }
 });
+const fs = require('fs');
+const path = require('path');
 
 router.post('/register', async (req, res) => {
   try {
@@ -145,6 +147,22 @@ router.post('/upload-avatar/:firebaseUid', upload.single('avatar'), async (req, 
     console.error('Error uploading avatar:', error);
     res.status(500).json({ message: 'Error uploading avatar' });
   }
-}); 
+});
+
+// 获取用户的公钥
+router.get('/public-key/:firebaseUid', async (req, res) => {
+    try {
+        const user = await User.findOne({ firebaseUid: req.params.firebaseUid });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // 从文件系统读取公钥
+        const publicKey = fs.readFileSync(path.join(__dirname, '../../keys/public.pem'), 'utf8');
+        res.json({ publicKey });
+    } catch (error) {
+        console.error('Error fetching public key:', error);
+        res.status(500).json({ message: 'Error fetching public key' });
+    }
+});
 
 module.exports = router; 

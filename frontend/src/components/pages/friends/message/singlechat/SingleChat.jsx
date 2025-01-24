@@ -3,6 +3,7 @@ import styles from './singlechat.module.css';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useSocket } from '../../../../../contexts/SocketContext';
 import { formatTimestamp } from '../../../../../utils/dateUtils';
+import { encryptMessage, decryptMessage } from '../../../../../utils/encryptionUtils';
 import axios from 'axios';
 import { convertBase64ToImage } from '../../../../../utils/imageUtils';
 import { IoClose } from 'react-icons/io5';
@@ -108,17 +109,32 @@ const SingleChat = ({ friend, onClose }) => {
         e.preventDefault();
         if (!newMessage.trim() || !socket) return;
 
-        const messageData = {
-            senderId: user.uid,
-            receiverId: friend.firebaseUid,
-            content: newMessage,
-            timestamp: new Date(),
-            read: false
-        };
+        try {
+            // 获取接收者的公钥
+            const response = await axios.get(`http://localhost:5001/api/users/public-key/${friend.firebaseUid}`);
+            const receiverPublicKey = response.data.publicKey;
 
-        socket.emit('send_message', messageData);
-        setConversation(prev => [...prev, messageData]);
-        setNewMessage('');
+            // 加密消息
+            const encryptedContent = encryptMessage(newMessage, receiverPublicKey);
+            if (!encryptedContent) {
+                console.error('Failed to encrypt message');
+                return;
+            }
+
+            const messageData = {
+                senderId: user.uid,
+                receiverId: friend.firebaseUid,
+                content: encryptedContent,
+                timestamp: new Date(),
+                read: false,
+            };
+
+            socket.emit('send_message', messageData);
+            setConversation(prev => [...prev, messageData]);
+            setNewMessage('');
+        } catch (error) {
+            console.error('Error sending encrypted message:', error);
+        }
     };
 
     const handleTyping = (e) => {
