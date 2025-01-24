@@ -28,6 +28,9 @@ export default function AddFriend() {
       if (!foundUser) {
         setError('User not found');
         return;
+      } else if (foundUser.firebaseUid === user.uid) {
+        setError('You cannot add yourself as a friend');
+        return;
       }
 
       // Check if already friends
@@ -51,7 +54,6 @@ export default function AddFriend() {
       setError('Error searching for user');
     } finally {
       setIsLoading(false);
-      setError('');
     }
   };
 

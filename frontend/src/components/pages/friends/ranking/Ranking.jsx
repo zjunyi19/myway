@@ -37,13 +37,19 @@ export default function Ranking() {
     return (
         <div className={styles.rankingContent}>
             <h2>Friend Ranking</h2>
-            <table className={styles.rankingTable}>
-                <thead>
+            {friends.length === 0 ? (
+                <div className={styles.noFriends}>
+                    <p>No friends yet. Add some friends to see their ranking!</p>
+                </div>
+            ) : (
+                <>
+                    <table className={styles.rankingTable}>
+                        <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>Avatar</th>
-                        <th>Username</th>
-                        <th>Score</th>
+                        <th className={styles.rank}>Rank</th>
+                        <th >Avatar</th>
+                        <th className={styles.username}>Username</th>
+                        <th className={styles.score}>Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,7 +75,9 @@ export default function Ranking() {
                     ))}
                 </tbody>
             </table>
-            {showUserInfo && <UserInfo userid={selectedFriendId} onSettingsClose={handleUserInfoClose} />}
+                    {showUserInfo && <UserInfo userid={selectedFriendId} onSettingsClose={handleUserInfoClose} />}
+                </>
+            )}
         </div>
     );
 }

@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getWeekStart, getWeekEnd } from '../../../utils/progressCalculator';
 import Topbar from "../../topbar/Topbar";
 import CreateHabit from "../habits/createHabit/CreateHabit";
-import FriendsMain from "../friends/FriendsmMain";
+import FriendsMain from "../friends/FriendsMain";
 import UserInfo from "../settings/userinfo/UserInfo";
 import EmptyHabitList from "../emptyhabitlist/EmptyHabitList";
 import EmptyUser from "../emptyuser/EmptyUser";

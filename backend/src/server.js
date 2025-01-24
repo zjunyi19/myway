@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+require('./config/redis');
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -21,11 +22,13 @@ const habitsRouter = require('./routes/habits');
 const completionsRouter = require('./routes/completions');
 const usersRouter = require('./routes/users');
 const friendsRouter = require('./routes/friends');
+const messageRouter = require('./routes/message');
 
 app.use('/api/habits', habitsRouter);
 app.use('/api/completions', completionsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/friends', friendsRouter);
+app.use('/api/messages', messageRouter);
 
 // Start server
 app.listen(port, () => {

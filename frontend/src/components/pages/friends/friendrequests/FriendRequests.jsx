@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import styles from './friendlist.module.css';
+import styles from './friendrequests.module.css';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { arrayBufferToBase64 } from '../../../../utils/dateHelpers';
 import UserInfo from '../../settings/userinfo/UserInfo';
 
-export default function FriendList() {
+export default function FriendRequests() {
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [friendList, setFriendList] = useState({ pending: [], accepted: [] });
@@ -17,18 +17,18 @@ export default function FriendList() {
     const handleUserInfoOpen = (friendId) => { setShowUserInfo(true); setSelectedFriendId(friendId); };
     
     const fetchFriendList = async () => {
-        setIsLoading(true);
-        try {
-            const response = await fetch(`http://localhost:5001/api/friends/get-friends/${user.uid}`);
-            const data = await response.json();
-            setFriendList(data);
-        } catch (error) {
-            console.error('Error fetching friend list:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
+    setIsLoading(true);
+    try {
+        const response = await fetch(`http://localhost:5001/api/friends/get-friends/${user.uid}`);
+        const data = await response.json();
+        setFriendList(data);
+    } catch (error) {
+        console.error('Error fetching friend list:', error);
+    } finally {
+        setIsLoading(false);
+    }
+};
+    
     useEffect(() => {
         fetchFriendList();
     }, [user]);
@@ -100,7 +100,9 @@ export default function FriendList() {
                 {isLoading ? (
                     <div className={styles.loading}>Loading...</div>
                 ) : friendList.pending.length === 0 && friendList.accepted.length === 0 ? (
-                    <div className={styles.noFriends}>You don't have any friends yet</div>
+                    <div className={styles.noFriends}>
+                        <p>No friends yet. Add some friends to start chatting!</p>
+                    </div>
                 ) : (
                     <>
                         <div className={styles.friendSection}>
