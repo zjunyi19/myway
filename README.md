@@ -1,22 +1,22 @@
-# Real-Time Chat Application
+# Habit Tracking Application
 
 ## Overview
 
-This project is a real-time chat application that allows users to communicate with their friends through instant messaging. The application uses React for the frontend, Node.js and Express for the backend, and Socket.IO for real-time communication. Redis is used for caching unread messages and user online status.
+This project is a habit tracking application that allows users to set, track, and manage their daily habits with friends. The application uses React for the frontend, Node.js and Express for the backend, and MongoDB for data storage. Redis is used for caching user data and improving performance.
 
 ## Features
 
 - User registration and login
-- Add and manage friends
-- Real-time chat functionality
-- Display unread message count
-- User online status display
-- Message read status management
+- Add and manage habits
+- Track daily habit completion
+- View habit statistics and progress
+- Add friends and start chatting in real-time
+- See ranking for habit completion
 
 ## Technology Stack
 
 - **Frontend**: React, Axios
-- **Backend**: Node.js, Express, Socket.IO
+- **Backend**: Node.js, Express
 - **Database**: MongoDB
 - **Cache**: Redis
 
@@ -72,4 +72,12 @@ This project is a real-time chat application that allows users to communicate wi
 
 - Open your browser and navigate to `http://localhost:3000` to access the application.
 - Register a new account or log in with existing credentials.
-- Add friends and start chatting in real-time.
+- Add habits and start tracking your progress.
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
+
+## License
+
+This project is licensed under the MIT License.
