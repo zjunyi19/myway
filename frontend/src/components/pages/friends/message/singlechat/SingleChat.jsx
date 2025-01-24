@@ -1,19 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './singlechat.module.css';
 import { useAuth } from '../../../../../contexts/AuthContext';
+import { useSocket } from '../../../../../contexts/SocketContext';
 import { formatTimestamp } from '../../../../../utils/dateUtils';
+import axios from 'axios';
 import { convertBase64ToImage } from '../../../../../utils/imageUtils';
 import { IoClose } from 'react-icons/io5';
 import UserInfo from '../../../settings/userinfo/UserInfo';
-import axios from 'axios';
 
 const SingleChat = ({ friend, onClose }) => {
     const { user } = useAuth();
+    const socket = useSocket();
     const [conversation, setConversation] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [showUserInfo, setShowUserInfo] = useState(false);
     const [selectedFriend, setSelectedFriend] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
 
     const handleClickOverlay = (e) => {
         if (e.target === e.currentTarget) {
@@ -34,16 +38,6 @@ const SingleChat = ({ friend, onClose }) => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    useEffect(() => {
-        fetchConversation();
-        //const interval = setInterval(fetchConversation, 5000); // Poll every 5 seconds
-        //return () => clearInterval(interval);
-    }, [friend, user]);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [conversation]);
-
     const fetchConversation = async () => {
         try {
             const response = await axios.get(`http://localhost:5001/api/messages/conversation/${user.uid}/${friend.firebaseUid}`);
@@ -55,20 +49,97 @@ const SingleChat = ({ friend, onClose }) => {
         }
     };
 
+    useEffect(() => {
+        fetchConversation();
+        // 进入聊天时通知服务器
+        if (socket) {
+            socket.emit('enter_chat', {
+                userId: user.uid,
+                friendId: friend.firebaseUid
+            });
+        }
+        // 组件卸载时通知服务器离开聊天
+        return () => {
+            if (socket) {
+                socket.emit('leave_chat', {
+                    userId: user.uid
+                });
+            }
+        };
+    }, [friend, socket]);
+
+    useEffect(() => {
+        if (socket) {
+            // 监听接收到的新消息
+            socket.on('receive_message', (message) => {
+                if (message.senderId === friend.firebaseUid) {
+                    setConversation(prev => [...prev, message]);
+                    scrollToBottom();
+                }
+            });
+
+            // 监听对方正在输入
+            socket.on('typing_start', ({ senderId }) => {
+                if (senderId === friend.firebaseUid) {
+                    setIsTyping(true);
+                }
+            });
+
+            // 监听对方停止输入
+            socket.on('typing_stop', ({ senderId }) => {
+                if (senderId === friend.firebaseUid) {
+                    setIsTyping(false);
+                }
+            });
+
+            return () => {
+                socket.off('receive_message');
+                socket.off('typing_start');
+                socket.off('typing_stop');
+            };
+        }
+    }, [socket, friend]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [conversation]);
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage) return;
+        if (!newMessage.trim() || !socket) return;
 
-        try {
-            await axios.post(`http://localhost:5001/api/messages/send`, {
+        const messageData = {
+            senderId: user.uid,
+            receiverId: friend.firebaseUid,
+            content: newMessage,
+            timestamp: new Date(),
+            read: false
+        };
+
+        socket.emit('send_message', messageData);
+        setConversation(prev => [...prev, messageData]);
+        setNewMessage('');
+    };
+
+    const handleTyping = (e) => {
+        setNewMessage(e.target.value);
+
+        if (socket) {
+            socket.emit('typing_start', {
                 senderId: user.uid,
-                receiverId: friend.firebaseUid,
-                content: newMessage
+                receiverId: friend.firebaseUid
             });
-            fetchConversation();
-            setNewMessage('');
-        } catch (error) {
-            console.error('Error sending message:', error);
+
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+
+            typingTimeoutRef.current = setTimeout(() => {
+                socket.emit('typing_stop', {
+                    senderId: user.uid,
+                    receiverId: friend.firebaseUid
+                });
+            }, 1000);
         }
     };
 
@@ -100,6 +171,7 @@ const SingleChat = ({ friend, onClose }) => {
                 <div className={styles.messagesContainer}>
                     {conversation.map((message) => (
                         <div 
+                            key={message._id}
                             className={`${styles.message} ${
                                 message.senderId === user.uid ? styles.sent : styles.received
                             }`}
@@ -112,6 +184,11 @@ const SingleChat = ({ friend, onClose }) => {
                             </div>
                         </div>
                     ))}
+                    {isTyping && (
+                        <div className={styles.typingIndicator}>
+                            {friend.username} is typing...
+                        </div>
+                    )}
                     <div ref={messagesEndRef} />
                 </div>
 
@@ -119,10 +196,9 @@ const SingleChat = ({ friend, onClose }) => {
                     <input
                         type="text"
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
+                        onChange={handleTyping}
                         placeholder="Type a message..."
                         className={styles.messageInput}
-                        autoFocus
                     />
                     <button type="submit" className={styles.sendButton}>
                         Send

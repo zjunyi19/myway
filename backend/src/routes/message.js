@@ -3,40 +3,36 @@ const router = express.Router();
 const Message = require('../models/MessageModel');
 const redisService = require('../services/redisService');
 
-// Send a new message
-router.post('/send', async (req, res) => {
-    try {
-        const { senderId, receiverId, content } = req.body;
-        const message = new Message({
-            senderId,
-            receiverId,
-            content,
-            timestamp: new Date(),
-            read: false
-        });
-        await message.save();
-        await redisService.cacheMessage(message);
-
-        res.status(201).json(message);
-    } catch (error) {
-        console.error('Error sending message:', error);
-        res.status(500).json({ message: 'Error sending message' });
-    }
-});
-
 router.post('/update-to-read/:userId/:friendId', async (req, res) => {
     try {
         const { userId, friendId } = req.params;
         await Message.updateMany({ senderId: friendId, receiverId: userId, read: false }, { $set: { read: true } });
         const message = await Message.find({ senderId: friendId, receiverId: userId});
-        await redisService.clearMessageCache(userId, friendId);
-        await redisService.cacheUserLatestMessages(userId, friendId, message);
+        await redisService.clearUnreadMessageCount(userId, friendId);
         res.status(200).json({ message: 'Messages marked as read' });
     } catch (error) {
         console.error('Error updating messages to read:', error);
         res.status(500).json({ message: 'Error updating messages to read' });
     }
 });
+
+router.get('/last-message/:userId/:friendId', async (req, res) => {
+    await redisService.clearAllMessageKeys();
+    const { userId, friendId } = req.params;
+    let message = null;
+    let count = null;
+    message = await redisService.getLastMessage(friendId, userId);
+    count = await redisService.getUnreadMessageCount(friendId, userId);
+    if (!message || count === -1) {
+        message = await Message.find({ senderId: friendId, receiverId: userId})
+        count = message.filter(msg => msg.read === false).length;
+        message = message.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        await redisService.cacheLastMessage(friendId, userId, message);
+        await redisService.cacheUnreadMessageCount(friendId, userId, count);
+    }
+    res.json({ message, count });
+});
+
 
 // Get conversation with a specific friend
 router.get('/conversation/:userId/:friendId', async (req, res) => {

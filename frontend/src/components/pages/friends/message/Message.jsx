@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styles from './message.module.css';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useSocket } from '../../../../contexts/SocketContext';
 import { formatTimestamp } from '../../../../utils/dateUtils';
 import { convertBase64ToImage } from '../../../../utils/imageUtils';
 import SingleChat from './singlechat/SingleChat';
 import UserInfo from '../../settings/userinfo/UserInfo';
 import axios from 'axios';
 
+
 const Message = () => {
     const { user } = useAuth();
+    const socket = useSocket();
     const [friends, setFriends] = useState([]);
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +45,50 @@ const Message = () => {
         fetchFriendsAndMessages();
     }, [user, needUpdate]);
 
+    useEffect(() => {
+        if (socket) {
+            socket.on('receive_message', (message) => {
+                handleReceiveMessage(message);
+            });
+
+            return () => {
+                socket.off('receive_message');
+            };
+        }
+    }, [socket, friends]);
+
+    const handleReceiveMessage = async (message) => {
+        // 如果消息是发给当前用户的
+        if (message.receiverId === user.uid) {
+            setFriends(prevFriends => {
+                const newFriends = prevFriends.map(friend => {
+                    if (friend.friend.firebaseUid === message.senderId) {
+                        // 如果消息未读，增加未读计数
+                        return {
+                            ...friend,
+                            message: message,
+                            unreadCount: message.read ? friend.unreadCount : friend.unreadCount + 1
+                        };
+                    }
+                    return friend;
+                });
+
+                // 根据未读消息数和时间戳重新排序
+                return newFriends.sort((a, b) => {
+                    // 首先按未读消息数排序
+                    if (b.unreadCount !== a.unreadCount) {
+                        return b.unreadCount - a.unreadCount;
+                    }
+                    // 然后按最新消息时间排序
+                    if (a.message && b.message) {
+                        return new Date(b.message.timestamp) - new Date(a.message.timestamp);
+                    }
+                    return 0;
+                });
+            });
+        }
+    };
+
     const fetchFriendsAndMessages = async () => {
         setIsLoading(true);
         try {
@@ -54,18 +101,17 @@ const Message = () => {
             const friendsWithMessages = await Promise.all(friendsList.map(async (friend) => {
                 try {
                     const messageResponse = await axios.get(
-                        `http://localhost:5001/api/messages/conversation/${user.uid}/${friend.firebaseUid}`
+                        `http://localhost:5001/api/messages/last-message/${user.uid}/${friend.firebaseUid}`
                     );
-                    const messages = messageResponse.data.map(msg => JSON.parse(msg));
-                    const unreadCount = messages.filter(msg => !msg.read && msg.senderId !== user.uid).length;
+                    const { message, count } = messageResponse.data;
                     return {
                         friend: {
                             firebaseUid: friend.firebaseUid,
                             username: friend.username,
                             avatar: friend.avatar
                         },
-                        message: messages || null,
-                        unreadCount
+                        message: message || null,
+                        unreadCount: count || 0
                     };
                 } catch (error) {
                     console.log('Error fetching messages for friend:', friend, error);
@@ -101,7 +147,6 @@ const Message = () => {
                 return a.friend.username.localeCompare(b.friend.username);
             });
             setFriends(sortedFriends);
-            console.log(sortedFriends);
         } catch (error) {
             console.error('Error fetching friends and messages:', error);
         } finally {
@@ -121,8 +166,8 @@ const Message = () => {
                     </div>
                 ) : (
                     friends.map(({ friend, message, unreadCount }) => (
-                        <div
-                            key={friend.firebaseUid}
+                            <div
+                                key={friend.firebaseUid}
                             className={`${styles.messagePreview} ${unreadCount > 0 ? styles.unread : ''}`}
                             onClick={() => handleClickConversation(friend, unreadCount)}
                         >
@@ -150,13 +195,13 @@ const Message = () => {
                                     <div className={styles.previewHeader}>
                                         <span className={styles.username}>{friend.username}</span>
                                     </div>
-                                    {message && message.length > 0 && (
+                                    {message && (
                                         <div className={styles.messageInfo}>
                                             <p className={styles.lastMessage}>
-                                                {message[0].content}
+                                                {message.content}
                                             </p>
                                             <span className={styles.timestamp}>
-                                                {formatTimestamp(message[0].timestamp)}
+                                                {formatTimestamp(message.timestamp)}
                                             </span>
                                             {unreadCount > 0 && (
                                                 <span className={styles.unreadBadge}>{unreadCount}</span>
