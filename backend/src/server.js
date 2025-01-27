@@ -50,12 +50,16 @@ const completionsRouter = require('./routes/completions');
 const usersRouter = require('./routes/users');
 const friendsRouter = require('./routes/friends');
 const messageRouter = require('./routes/message');
+const adventureRouter = require('./routes/adventure');
+const petRouter = require('./routes/pet');
 
 app.use('/api/habits', habitsRouter);
 app.use('/api/completions', completionsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/messages', messageRouter);
+app.use('/api/pet/adventure', adventureRouter);
+app.use('/api/pet', petRouter);
 
 // Start server
 const PORT = process.env.PORT || 5001;

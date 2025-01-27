@@ -1,0 +1,243 @@
+.shopOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999999;
+}
+
+.shopContent {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.shopHeader {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000001;
+}
+
+.shopHeader h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+}
+
+.petStats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.statItem i {
+    font-size: 1.1rem;
+}
+
+.statItem:nth-child(1) i { color: #ffd700; }  /* Coins */
+.statItem:nth-child(2) i { color: #ff4b4b; }  /* Mood */
+.statItem:nth-child(3) i { color: #8b4513; }  /* Hunger */
+
+.playerScore {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-right: 12px;
+}
+
+.closeButton {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #ff4b4b;
+    transform: none;
+    box-shadow: none;
+}
+
+.itemsSection {
+    margin-bottom: 32px;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+}
+
+.shopTabs {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+}
+
+.tabButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 2px solid #000;
+    border-radius: 12px;
+    background: white;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.tabButton.activeTab {
+    background: #000;
+    color: white;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.tabButton i {
+    font-size: 1.2rem;
+}
+
+.itemsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.shopItem {
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.shopItem:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.itemIcon {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #000;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: white;
+}
+
+.itemInfo {
+    flex: 1;
+}
+
+.itemInfo h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    color: #000;
+}
+
+.itemInfo p {
+    margin: 0 0 12px 0;
+    color: #666;
+}
+
+.itemPrice {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+.buyButton {
+    padding: 8px 24px;
+    border: 2px solid #000;
+    border-radius: 12px;
+    background: white;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.buyButton:hover:not(:disabled) {
+    background: #ff4b4b;
+    color: white;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.buyButton:disabled {
+    background: #f5f5f5;
+    border-color: #ccc;
+    color: #999;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .shopContent {
+        width: 95%;
+        padding: 16px;
+    }
+
+    .itemsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .shopHeader h2 {
+        font-size: 1.5rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.2rem;
+    }
+} 

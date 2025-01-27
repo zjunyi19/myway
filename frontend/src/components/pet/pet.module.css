@@ -1,0 +1,232 @@
+.petCard {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 16px;
+    width: 200px;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.petHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.petName {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.petLevel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    padding: 4px 8px;
+    background: #f0f0f0;
+    border-radius: 12px;
+}
+
+.statusBars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.statusBar {
+    width: 100%;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.statusFill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.expFill {
+    background: linear-gradient(to right, #4CAF50, #8BC34A);
+}
+
+.healthFill {
+    background: linear-gradient(to right, #f44336, #ff7043);
+}
+
+.petStats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #666;
+    position: relative;
+    cursor: help;
+}
+
+.statItem:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background: #000;
+    color: white;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 4px;
+}
+
+.petAvatar {
+    width: 80px;
+    height: 80px;
+    margin: 12px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    animation: float 2s ease-in-out infinite;
+    cursor: pointer;
+    user-select: none;
+}
+
+.petAvatar:hover {
+    animation: bounce 0.6s ease infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-8px) rotate(-4deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-8px) rotate(4deg);
+    }
+}
+
+.petActions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.actionButton {
+    padding: 8px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionButton:hover:not(:disabled) {
+    background: #ff4b4b;
+    color: white;
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.actionButton:disabled {
+    border-color: #ccc;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.petWrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: #fafafa;
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-shadow: 6px 6px 0 #000;
+    transition: all 0.2s ease;
+}
+
+.petWrapper:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 #000;
+}
+
+.petBody {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.petBody:hover {
+    transform: scale(1.1);
+}
+
+.petEyes {
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.petEyes::before,
+.petEyes::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: relative;
+}
+
+.feeding .petBody {
+    animation: bounce 0.5s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+} 

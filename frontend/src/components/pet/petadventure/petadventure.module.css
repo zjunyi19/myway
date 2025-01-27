@@ -1,0 +1,187 @@
+.adventureOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.adventureContent {
+    position: relative;
+    width: 1000px;
+    padding: 3rem;
+    background: #fafafa;
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.adventureHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.adventureHeader h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.adventurePass {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.5rem;
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.adventurePass i {
+    color: #f0ad4e;
+}
+
+.closeButton {
+    background: none;
+    border: 2px solid #000;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    color: #000;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.adventureTypes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.adventureOption {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.adventureOption:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.adventureOption.selected {
+    background: #ff4b4b;
+    color: white;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.adventureOption.selected .adventureInfo h3,
+.adventureOption.selected .adventureInfo p,
+.adventureOption.selected .adventureDetails {
+    color: white;
+}
+
+.adventureOption.selected .adventureDetails i {
+    color: white;
+}
+
+.adventureInfo h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.adventureInfo p {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.adventureDetails {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1rem;
+    color: #666;
+}
+
+.adventureDetails span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adventureDetails i {
+    color: #4CAF50;
+    font-size: 1.2rem;
+}
+
+.adventureActions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.startButton {
+    padding: 15px 40px;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.startButton:hover:not(:disabled) {
+    background: #ff4b4b;
+    color: white;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000;
+}
+
+.startButton:disabled {
+    background: #f5f5f5;
+    border-color: #ccc;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .adventureContent {
+        width: 95%;
+        padding: 2rem;
+    }
+
+    .adventureTypes {
+        grid-template-columns: 1fr;
+    }
+
+    .adventureHeader h2 {
+        font-size: 1.5rem;
+    }
+} 
