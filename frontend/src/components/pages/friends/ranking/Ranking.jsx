@@ -61,36 +61,39 @@ export default function Ranking() {
                 <>
                     <table className={styles.rankingTable}>
                         <thead>
-                    <tr>
-                        <th className={styles.rank}>Rank</th>
-                        <th >Avatar</th>
-                        <th className={styles.username}>Username</th>
-                        <th className={styles.score}>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {friends.map((friend, index) => (
-                        <tr key={friend.firebaseUid} onClick={() => handleUserInfoOpen(friend.firebaseUid)}>
-                            <td className={styles.rank}>{index + 1}</td>
-                            <td>
-                                <div className={styles.avatarContainer}>
-                                    {friend.avatar?.data ? (
-                                        <img
-                                            src={`data:${friend.avatar.contentType};base64,${arrayBufferToBase64(friend.avatar.data.data)}`}
-                                            alt="Avatar"
-                                            className={styles.avatar}
-                                        />
-                                    ) : (
-                                        <i className="fa-solid fa-circle-user" style={{ fontSize: '2rem', color: '#9c9c9c' }}></i>
-                                    )}
-                                </div>
-                            </td>
-                            <td className={styles.username}>{friend.username}</td>
-                            <td className={styles.score}>{friend.score}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                            <tr>
+                                <th className={styles.rank}>Rank</th>
+                                <th>Avatar</th>
+                                <th className={styles.username}>Username</th>
+                                <th className={styles.score}>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {friends.map((friend, index) => (
+                                <tr key={friend.firebaseUid}>
+                                    <td className={styles.rank}>{index + 1}</td>
+                                    <td>
+                                        <div 
+                                            className={styles.avatarContainer}
+                                            onClick={() => handleUserInfoOpen(friend.firebaseUid)}
+                                        >
+                                            {friend.avatar?.data ? (
+                                                <img
+                                                    src={`data:${friend.avatar.contentType};base64,${arrayBufferToBase64(friend.avatar.data.data)}`}
+                                                    alt="Avatar"
+                                                    className={styles.avatar}
+                                                />
+                                            ) : (
+                                                <i className="fa-solid fa-circle-user" style={{ fontSize: '2rem', color: '#9c9c9c' }}></i>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className={styles.username}>{friend.username}</td>
+                                    <td className={styles.score}>{friend.score}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                     {showUserInfo && <UserInfo userid={selectedFriendId} onSettingsClose={handleUserInfoClose} />}
                 </>
             )}

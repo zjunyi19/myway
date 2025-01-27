@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './addfriend.module.css';
-import { useAuth } from '../../../../contexts/AuthContext';
 import { useSocket } from '../../../../contexts/SocketContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import { arrayBufferToBase64 } from '../../../../utils/dateHelpers';
 
 export default function AddFriend() {
@@ -11,7 +11,6 @@ export default function AddFriend() {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const socket = useSocket();
-
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
         setError('Please enter a username');

@@ -19,7 +19,7 @@ export default function Topbar({ onAddClick, onSettingsClick, onFriendsClick }) 
         >
           <i className="fa-solid fa-circle-user"></i>
         </button>
-        <button className={styles.friendsButton} onClick={onFriendsClick}>
+        <button className={styles.friendsButton} onClick={() => userLoggedIn ? onFriendsClick() : navigate('/login')}>
           <i className="fa-solid fa-user-friends"></i>
         </button>
       </div>
