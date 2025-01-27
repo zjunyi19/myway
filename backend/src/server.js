@@ -10,13 +10,22 @@ const socketHandler = require('./socket/socketHandler');
 const app = express();
 const server = http.createServer(app);
 
-// 设置 Socket.IO
+// 优化 Socket.IO 配置
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000", "http://localhost:3001"], // 允许这两个端口的前端访问
+        origin: ["http://localhost:3000", "http://localhost:3001"],
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    pingTimeout: 60000, // 60 seconds
+    pingInterval: 25000, // 25 seconds
+    connectTimeout: 10000, // 10 seconds
+    transports: ['websocket', 'polling'],
+    allowEIO3: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000
 });
 
 // Middleware
@@ -29,8 +38,8 @@ app.use(express.json());
 // MongoDB connection
 const uri = process.env.MONGODB_URI;
 mongoose.connect(uri)
-  .then(() => console.log('MongoDB connection established'))
-  .catch(err => console.log('MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connection established'))
+    .catch(err => console.log('MongoDB connection error:', err));
 
 // 初始化Socket处理
 socketHandler(io);

@@ -35,32 +35,35 @@ const SingleChat = ({ friend, onClose }) => {
     };
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+        }
     };
 
     const fetchConversation = async () => {
         try {
             const response = await axios.get(`http://localhost:5001/api/messages/conversation/${user.uid}/${friend.firebaseUid}`);
-            console.log(response.data);
             const messages = response.data.map(msg => JSON.parse(msg));
-            console.log("messages", messages);
             messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             setConversation(messages);
+            setTimeout(scrollToBottom, 100);
         } catch (error) {
             console.error('Error fetching conversation:', error);
         }
     };
 
     useEffect(() => {
+        scrollToBottom();
+    }, [conversation]);
+
+    useEffect(() => {
         fetchConversation();
-        // 进入聊天时通知服务器
         if (socket) {
             socket.emit('enter_chat', {
                 userId: user.uid,
                 friendId: friend.firebaseUid
             });
         }
-        // 组件卸载时通知服务器离开聊天
         return () => {
             if (socket) {
                 socket.emit('leave_chat', {
@@ -72,7 +75,6 @@ const SingleChat = ({ friend, onClose }) => {
 
     useEffect(() => {
         if (socket) {
-            // 监听接收到的新消息
             socket.on('receive_message', (message) => {
                 if (message.senderId === friend.firebaseUid) {
                     setConversation(prev => [...prev, message]);
@@ -80,14 +82,12 @@ const SingleChat = ({ friend, onClose }) => {
                 }
             });
 
-            // 监听对方正在输入
             socket.on('typing_start', ({ senderId }) => {
                 if (senderId === friend.firebaseUid) {
                     setIsTyping(true);
                 }
             });
 
-            // 监听对方停止输入
             socket.on('typing_stop', ({ senderId }) => {
                 if (senderId === friend.firebaseUid) {
                     setIsTyping(false);
@@ -101,10 +101,6 @@ const SingleChat = ({ friend, onClose }) => {
             };
         }
     }, [socket, friend]);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [conversation]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();

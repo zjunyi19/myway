@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styles from './friendrequests.module.css';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useSocket } from '../../../../contexts/SocketContext';
 import { arrayBufferToBase64 } from '../../../../utils/dateHelpers';
 import UserInfo from '../../settings/userinfo/UserInfo';
 
 export default function FriendRequests() {
     const { user } = useAuth();
+    const socket = useSocket();
     const [isLoading, setIsLoading] = useState(true);
     const [friendList, setFriendList] = useState({ pending: [], accepted: [] });
     const [showUserInfo, setShowUserInfo] = useState(false);
@@ -33,6 +35,20 @@ export default function FriendRequests() {
         fetchFriendList();
     }, [user]);
 
+    // 监听新的好友请求
+    useEffect(() => {
+        if (!socket || !user) return;
+
+        socket.on('friend_request_received', () => {
+            console.log('New friend request received');
+            fetchFriendList();
+        });
+
+        return () => {
+            socket.off('friend_request_received');
+        };
+    }, [socket, user]);
+
     const handleAcceptFriend = async (friendUid) => {
         setIsLoading(true);
         try {
@@ -49,10 +65,14 @@ export default function FriendRequests() {
             });
 
             if (response.ok) {
+                // 发送socket事件通知发送者
+                socket.emit('friend_request_accepted', {
+                    fromUserId: user.uid,
+                    toUserId: friendUid
+                });
+
                 setFriendList(prev => {
-                    // Find the friend object from pending list
                     const acceptedFriend = prev.pending.find(friend => friend.firebaseUid === friendUid);
-                    
                     return {
                         pending: prev.pending.filter(friend => friend.firebaseUid !== friendUid),
                         accepted: [...prev.accepted, acceptedFriend]
@@ -154,21 +174,14 @@ export default function FriendRequests() {
                             )}
                         </div>
                         <div className={styles.friendSection}>
-                            <div 
-                                className={styles.sectionHeader} 
-                                onClick={() => setShowAccepted(!showAccepted)}
-                            >
+                            <div className={styles.sectionHeader} onClick={() => setShowAccepted(!showAccepted)}>
                                 <h3>Friends ({friendList.accepted.length})</h3>
                                 <i className={`fas fa-chevron-${showAccepted ? 'up' : 'down'}`}></i>
                             </div>
                             {showAccepted && (
                                 <div className={styles.friendList}>
                                     {friendList.accepted.map(friend => (
-                                        <div 
-                                            key={friend.firebaseUid} 
-                                            className={styles.friendCard}
-                                            onClick={() => handleUserInfoOpen(friend.firebaseUid)}
-                                        >
+                                        <div key={friend.firebaseUid} className={styles.friendCard} onClick={() => handleUserInfoOpen(friend.firebaseUid)}>
                                             <div className={styles.friendInfo}>
                                                 <div className={styles.avatarContainer}>
                                                     {friend.avatar?.data ? (

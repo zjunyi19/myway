@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './addfriend.module.css';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useSocket } from '../../../../contexts/SocketContext';
 import { arrayBufferToBase64 } from '../../../../utils/dateHelpers';
 
 export default function AddFriend() {
@@ -9,6 +10,7 @@ export default function AddFriend() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  const socket = useSocket();
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
@@ -76,6 +78,12 @@ export default function AddFriend() {
       });
 
       if (response.ok) {
+        // 发送socket事件通知接收者
+        socket.emit('friend_request_sent', {
+          fromUserId: user.uid,
+          toUserId: searchResult.friendInfo.firebaseUid
+        });
+
         setSearchResult(prev => ({
           ...prev,
           friendship: {

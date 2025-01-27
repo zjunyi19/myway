@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { arrayBufferToBase64 } from '../../../../utils/dateHelpers';
 import styles from './ranking.module.css';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useSocket } from '../../../../contexts/SocketContext';
 import UserInfo from '../../settings/userinfo/UserInfo';
 
 export default function Ranking() {
     const { user } = useAuth();
+    const socket = useSocket();
     const [friends, setFriends] = useState([]);
     const [selectedFriendId, setSelectedFriendId] = useState(null);
     const [showUserInfo, setShowUserInfo] = useState(false);
@@ -24,6 +26,20 @@ export default function Ranking() {
     useEffect(() => {
         fetchFriendsScores();
     }, [user]);
+
+    // 监听好友请求接受
+    useEffect(() => {
+        if (!socket || !user) return;
+
+        socket.on('friend_request_accepted', () => {
+            console.log('Friend request accepted, refreshing ranking');
+            fetchFriendsScores();
+        });
+
+        return () => {
+            socket.off('friend_request_accepted');
+        };
+    }, [socket, user]);
 
     const handleUserInfoOpen = (friendId) => {
         setSelectedFriendId(friendId);
